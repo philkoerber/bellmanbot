@@ -23,7 +23,7 @@ const OurConsole = () => {
   return (
     <div className="top-0 left-0 w-full p-2  text-pakistan overflow-y-auto z-50">
       <div className="flex justify-between">
-        <h2 className="text-xl">console</h2>
+        <h2 className="text-xl">Console</h2>
         <Button onClick={() => setLogs([])} text="Clear" variant="secondary" />
       </div>
       <ul className="mt-2">
