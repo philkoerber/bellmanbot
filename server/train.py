@@ -26,4 +26,4 @@ def train():
     # Save the model in the new .keras format
     model.save('rnn_model.keras')
 
-    return jsonify({"message": "Training completed and model saved!"})
+    return jsonify({"message": "Training completed and model saved!!!"})
