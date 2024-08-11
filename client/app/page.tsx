@@ -1,57 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
+import Button from "./components/Button";
 
-type Props = {};
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
 
-type Book = {
-  id: number;
-  title: string;
-  author: string;
-};
+const Page = () => {
+  const [data, setData] = useState<ApiResponse | null>(null);
 
-const Home = (props: Props) => {
-  const [message, setMessage] = useState("");
-  const [people, setPeople] = useState([]);
-  const [books, setBooks] = useState<Book[]>([]);
+  const handleTrainButton = async () => {
+    try {
+      const response = await fetch("/api/train", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let response = await fetch("/api/home/");
-      let data = await response.json();
-      setMessage(data.message);
-      setPeople(data.people);
+      const result = await response.json();
+      setData(result);
 
-      response = await fetch("/api/data/");
-      data = await response.json();
-      setBooks(data.books);
-    };
-    fetchData();
-  }, []);
+      // Assuming customConsole is available globally
+      if (window.customConsole) {
+        window.customConsole.log(
+          `Train API Response: ${result.message}`,
+          "log"
+        );
+      }
+    } catch (error) {
+      console.error("Error calling /api/train:", error);
+      if (window.customConsole) {
+        window.customConsole.log("Error calling /api/train", "error");
+      }
+    }
+  };
+
+  const handlePredictButton = async () => {
+    try {
+      const response = await fetch("/api/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+      setData(result);
+
+      // Assuming customConsole is available globally
+      if (window.customConsole) {
+        window.customConsole.log(
+          `Predict API Response: ${result.message}`,
+          "log"
+        );
+      }
+    } catch (error) {
+      console.error("Error calling /api/predict:", error);
+      if (window.customConsole) {
+        window.customConsole.log("Error calling /api/predict", "error");
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-xl font-bold mb-4">Message:</h1>
-        <p className="mb-8">{message}</p>
-        <h1 className="text-xl font-bold mb-4">People:</h1>
-        <ul className="list-disc pl-5 mb-8">
-          {people.map((person: string) => (
-            <li key={person}>{person}</li>
-          ))}
-        </ul>
-        <h1 className="text-xl font-bold mb-4">Books:</h1>
-        <ul className="divide-y divide-gray-200">
-          {books.map((book: Book) => (
-            <li key={book.id} className="py-4">
-              <p className="font-semibold">{book.title}</p>
-              <p className="text-gray-600">{book.author}</p>
-            </li>
-          ))}
-        </ul>
+    <div>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <Button text="Train" variant="primary" onClick={handleTrainButton} />
+        <Button
+          text="Predict"
+          variant="primary"
+          onClick={handlePredictButton}
+        />
       </div>
     </div>
   );
 };
 
-export default Home;
+export default Page;
