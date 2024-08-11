@@ -9,7 +9,9 @@ interface LogEntry {
 }
 
 const OurConsole = () => {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([
+    { message: "welcome to the BellmanBot!", type: "log" },
+  ]);
 
   const log = (message: string, type: LogEntry["type"] = "log") => {
     setLogs((prevLogs) => [...prevLogs, { message, type }]);
@@ -19,9 +21,9 @@ const OurConsole = () => {
   (window as any).customConsole = { log };
 
   return (
-    <div className="top-0 left-0 w-full p-2  text-white overflow-y-auto z-50">
+    <div className="top-0 left-0 w-full p-2  text-pakistan overflow-y-auto z-50">
       <div className="flex justify-between">
-        <h2 className="text-xl">CCOONNSSOOLLEE</h2>
+        <h2 className="text-xl">console</h2>
         <Button onClick={() => setLogs([])} text="Clear" variant="secondary" />
       </div>
       <ul className="mt-2">
