@@ -29,7 +29,7 @@ export default function RootLayout({
             <img
               src="/bell.svg"
               alt="Background SVG"
-              className="absolute max-w-[400px] w-[50%] h-auto object-contain opacity-[2%] blur-sm z-0"
+              className="absolute max-w-[400px] w-[50%] h-auto object-contain opacity-[5%] blur-sm z-0"
               style={{
                 top: "50%",
                 left: "50%",
