@@ -3,6 +3,7 @@
 
 # server dependencies
 /server/venv/
+/server/__pycache__/
 
 # client dependencies
 /client/node_modules
