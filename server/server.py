@@ -11,6 +11,7 @@ from predict import predict_bp
 # Register the blueprints
 app.register_blueprint(train_bp, url_prefix='/api')
 app.register_blueprint(predict_bp, url_prefix='/api')
+app.register_blueprint(download_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
