@@ -1,29 +1,32 @@
-import { createStore } from "zustand";
-import { create } from "zustand/vanilla";
-import { useStore } from "zustand/react";
+import { create } from "zustand";
 
 interface LogEntry {
   message: string;
-  type: "log" | "warn" | "error";
+  type: string;
 }
 
 interface LogStore {
   logs: LogEntry[];
-  addLog: (message: string, type?: "log" | "warn" | "error") => void;
+  addLog: (message: string, type: string) => void;
   clearLogs: () => void;
 }
 
-// Create the vanilla store
-const logStore = createStore<LogStore>((set) => ({
-  logs: [{ message: "welcome to the BellmanBot!", type: "log" }],
-  addLog: (message, type = "log") =>
+const useLogStore = create<LogStore>((set) => ({
+  logs: [
+    {
+      message: "Console up and running. Welcome to the bellmanBot v1",
+      type: "log",
+    },
+  ],
+
+  // Add a log entry
+  addLog: (message, type) =>
     set((state) => ({
       logs: [...state.logs, { message, type }],
     })),
+
+  // Clear all log entries
   clearLogs: () => set({ logs: [] }),
 }));
-
-// Create the hook for using the store
-const useLogStore = () => useStore(logStore);
 
 export default useLogStore;

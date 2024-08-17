@@ -7,6 +7,7 @@ import useLogStore from "./components/useLogStore";
 interface ApiResponse {
   success: boolean;
   message: string;
+  data: any;
 }
 
 const Page = () => {
