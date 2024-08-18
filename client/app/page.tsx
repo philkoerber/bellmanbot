@@ -10,29 +10,31 @@ interface ApiResponse {
   data: any;
 }
 
+
 const Page = () => {
-  const [data, setData] = useState<ApiResponse | null>(null);
   const addLog = useLogStore((state) => state.addLog);
+  const [globalSymbol, setGlobalSymbol] = useState<string>("AAPL")
 
-  const handleDownloadButton = async () => {
-    addLog("downloading some data...calling /api/train", "log")
-    try {
-      const response = await fetch("/api/download", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-      setData(result);
-
-      addLog(`Download API Response: ${result.message}`, "log");
-    } catch (error) {
-      console.error("Error calling /api/download:", error);
-      addLog("Error calling /api/download", "error");
-    }
+  const handleDownloadButton = (symbol: string) => {
+    addLog("Starting download for instrument " + symbol, "log");
+    const encodedSymbol = encodeURIComponent(symbol);
+    const eventSource = new EventSource(`/api/download?symbol=${encodedSymbol}`);
+  
+    eventSource.onmessage = (event) => {
+      addLog(event.data, "log");
+  
+      if (event.data.includes("Download complete")) {
+        eventSource.close();
+      }
+    };
+  
+    eventSource.onerror = (error) => {
+      addLog("Error in downloading data", "error");
+      console.error("SSE error:", error);
+      eventSource.close();
+    };
   };
+  
 
   const handleTrainButton = async () => {
     try {
@@ -42,10 +44,7 @@ const Page = () => {
           "Content-Type": "application/json",
         },
       });
-
       const result = await response.json();
-      setData(result);
-
       addLog(`Train API Response: ${result.message}`, "log");
     } catch (error) {
       console.error("Error calling /api/train:", error);
@@ -61,10 +60,7 @@ const Page = () => {
           "Content-Type": "application/json",
         },
       });
-
       const result = await response.json();
-      setData(result);
-
       addLog(`Predict API Response: ${result.message}`, "log");
     } catch (error) {
       console.error("Error calling /api/predict:", error);
@@ -78,7 +74,7 @@ const Page = () => {
         <Button
           text="Download"
           variant="primary"
-          onClick={handleDownloadButton}
+          onClick={()=>handleDownloadButton(globalSymbol)}
         />
         <Button text="Train" variant="primary" onClick={handleTrainButton} />
         <Button

@@ -1,34 +1,73 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, Response, stream_with_context, request
 import os
-import pandas as pd
-import nasdaqdatalink as ndl
+import requests
+import csv
+from datetime import datetime
 
 download_bp = Blueprint('download', __name__)
 
 # Configuration
-NASDAQ_API_KEY = os.getenv('NASDAQ_API_KEY') or 'QttARKYQYRXeP3setHbc'
-SYMBOL = os.getenv('SYMBOL') or 'AAPL'  # Example: 'AAPL' for Apple stock
-DATA_FILE = 'historical_nasdaq_data.csv'
+TWELVEDATA_API_KEY = os.getenv('TWELVEDATA_API_KEY') or '83a3ab2d88ff4292a6b446d30b5d27bc'
+INTERVAL = os.getenv('INTERVAL') or '1min'
+OUTPUTSIZE = 4000  # Set to the maximum allowed by the API for one request
+DATA_FOLDER = 'data'
+TOTAL_RECORDS = 16000  # Number of records you want to retrieve for testing
 
-# Function to download data and save to CSV
-def download_nasdaq_data():
+# Ensure the data directory exists
+if not os.path.exists(DATA_FOLDER):
+    os.makedirs(DATA_FOLDER)
+
+def stream_twelvedata_large(symbol):
     try:
-        # Set API key for nasdaq-data-link
-        ndl.ApiConfig.api_key = NASDAQ_API_KEY
+        total_data = []
+        end_date = os.getenv('END_DATE') or datetime.now().strftime('%Y-%m-%d')
+        data_file = os.path.join(DATA_FOLDER, f'twelvedata_{symbol}.csv')
 
-        # Retrieve historical data for the symbol
-        data = ndl.get(f"WIKI/{SYMBOL}")
+        with open(data_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['datetime', 'open', 'high', 'low', 'close', 'volume'])
 
-        # Save the data to a CSV file
-        data.to_csv(DATA_FILE)
-        
+            while len(total_data) < TOTAL_RECORDS:
+                url = f'https://api.twelvedata.com/time_series'
+                params = {
+                    'symbol': symbol,
+                    'interval': INTERVAL,
+                    'end_date': end_date,
+                    'outputsize': OUTPUTSIZE,
+                    'apikey': TWELVEDATA_API_KEY
+                }
+
+                response = requests.get(url, params=params)
+                response.raise_for_status()
+
+                data = response.json()
+                if 'values' not in data:
+                    raise Exception(f"Error fetching data: {data.get('message', 'Unknown error')}")
+
+                time_series = data['values']
+                for record in time_series:
+                    writer.writerow([
+                        record['datetime'],
+                        record['open'],
+                        record['high'],
+                        record['low'],
+                        record['close'],
+                        record['volume']
+                    ])
+                    total_data.append(record)
+
+                if len(time_series) < OUTPUTSIZE:
+                    break
+
+                end_date = time_series[-1]['datetime']
+
+            yield f"data: Download complete for {symbol}. Total records: {len(total_data)}\n\n"
+
     except Exception as e:
-        raise Exception(f"Failed to download data for symbol {SYMBOL}: {str(e)}")
+        yield f"data: Error: {str(e)}\n\n"
 
 @download_bp.route('/download', methods=['GET'])
-def download_nasdaq_route():
-    try:
-        download_nasdaq_data()
-        return jsonify({"message": "NASDAQ data downloaded and saved to CSV."})
-    except Exception as e:
-        return jsonify({"message": "Download failed!", "error": str(e)}), 500
+def download_twelvedata_route():
+    # Get the symbol from query parameters, default to 'AAPL' if not provided
+    symbol = request.args.get('symbol', 'AAPL')
+    return Response(stream_with_context(stream_twelvedata_large(symbol)), content_type='text/event-stream')

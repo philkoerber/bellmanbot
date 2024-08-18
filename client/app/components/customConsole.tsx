@@ -10,11 +10,10 @@ const OurConsole = () => {
 
   return (
     <div className="top-0 left-0 w-full p-2 text-pakistan overflow-y-auto z-50">
-      <div className="flex justify-between">
-        <h2 className="text-xl">Console</h2>
+      <div className="flex justify-between items-center absolute">
         <Button onClick={clearLogs} text="Clear" variant="secondary" />
       </div>
-      <ul className="mt-2">
+      <ul className="mt-12">
         {logs.map((log, index) => (
           <li
             key={index}
