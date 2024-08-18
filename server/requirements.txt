@@ -1,5 +1,7 @@
 flask
 flask-cors
-tensorflow
+nasdaq-data-link
 pandas
-https://files.pythonhosted.org/packages/a5/5b/7f0acd7f89752de11c5c0dc0155294b40d9353a79cbb83bbf606d565c1e1/metaapi_cloud_sdk-27.1.1.tar.gz
+tensorflow
+
+

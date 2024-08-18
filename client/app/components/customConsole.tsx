@@ -6,11 +6,7 @@ import useLogStore from "./useLogStore"; // Import the Zustand store
 const OurConsole = () => {
   // Access the Zustand store state and actions
   const logs = useLogStore((state) => state.logs);
-  const addLog = useLogStore((state) => state.addLog);
   const clearLogs = useLogStore((state) => state.clearLogs);
-
-  // Expose the log function globally for ease of use
-  (window as any).customConsole = { log: addLog };
 
   return (
     <div className="top-0 left-0 w-full p-2 text-pakistan overflow-y-auto z-50">

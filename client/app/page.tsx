@@ -15,9 +15,10 @@ const Page = () => {
   const addLog = useLogStore((state) => state.addLog);
 
   const handleDownloadButton = async () => {
+    addLog("downloading some data...calling /api/train", "log")
     try {
       const response = await fetch("/api/download", {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },

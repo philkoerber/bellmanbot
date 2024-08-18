@@ -7,6 +7,7 @@ CORS(app)  # Enable CORS
 # Import the blueprints
 from train import train_bp
 from predict import predict_bp
+from download import download_bp
 
 # Register the blueprints
 app.register_blueprint(train_bp, url_prefix='/api')
