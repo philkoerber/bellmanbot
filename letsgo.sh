@@ -3,6 +3,8 @@
 # Path to your client directory
 CLIENT_DIR="./client"
 
+echo "ok lets go! welcome to the bellmanBot!"
+
 # Check if node_modules directory exists, indicating npm is initialized
 if [ ! -d "$CLIENT_DIR/node_modules" ]; then
   echo "npm is not initialized in $CLIENT_DIR. Running npm install..."
