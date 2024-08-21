@@ -13,12 +13,11 @@ interface ApiResponse {
 
 const Page = () => {
   const addLog = useLogStore((state) => state.addLog);
-  const [globalSymbol, setGlobalSymbol] = useState<string>("AAPL")
+  const [globalSymbol, setGlobalSymbol] = useState<string>("EUR/USD")
 
   const handleDownloadButton = (symbol: string) => {
     addLog("Starting download for instrument " + symbol, "log");
-    const encodedSymbol = encodeURIComponent(symbol);
-    const eventSource = new EventSource(`/api/download?symbol=${encodedSymbol}`);
+    const eventSource = new EventSource(`/api/download?symbol=${symbol}`);
   
     eventSource.onmessage = (event) => {
       addLog(event.data, "log");
@@ -36,9 +35,9 @@ const Page = () => {
   };
   
 
-  const handleTrainButton = async () => {
+  const handleTrainButton = async (symbol: string) => {
     try {
-      const response = await fetch("/api/train", {
+      const response = await fetch(`/api/train?symbol=${symbol}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,7 +75,7 @@ const Page = () => {
           variant="primary"
           onClick={()=>handleDownloadButton(globalSymbol)}
         />
-        <Button text="Train" variant="primary" onClick={handleTrainButton} />
+        <Button text="Train" variant="primary" onClick={()=>handleTrainButton(globalSymbol)} />
         <Button
           text="Predict"
           variant="primary"

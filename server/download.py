@@ -21,7 +21,8 @@ def stream_twelvedata_large(symbol):
     try:
         total_data = []
         end_date = os.getenv('END_DATE') or datetime.now().strftime('%Y-%m-%d')
-        data_file = os.path.join(DATA_FOLDER, f'twelvedata_{symbol}.csv')
+        safe_symbol = symbol.replace('/', '_')
+        data_file = os.path.join(DATA_FOLDER, f'{safe_symbol}.csv')
 
         with open(data_file, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -42,7 +43,9 @@ def stream_twelvedata_large(symbol):
 
                 data = response.json()
                 if 'values' not in data:
-                    raise Exception(f"Error fetching data: {data.get('message', 'Unknown error')}")
+                    error_message = f"Error fetching data for {safe_symbol}: {data.get('message', 'Unknown error')}"
+                    yield f"data: {error_message}\n\n"
+                    return
 
                 time_series = data['values']
                 for record in time_series:
@@ -52,7 +55,7 @@ def stream_twelvedata_large(symbol):
                         record['high'],
                         record['low'],
                         record['close'],
-                        record['volume']
+                        record.get('volume', 0)  # Default to 0 if 'volume' is missing
                     ])
                     total_data.append(record)
 

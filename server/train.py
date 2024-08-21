@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import os
 import pandas as pd
 import tensorflow as tf
@@ -6,8 +6,8 @@ import numpy as np
 
 train_bp = Blueprint('train', __name__)
 
-DATA_FILE = 'historical_data.csv'
 MODEL_FOLDER = 'models'
+DATA_FOLDER = 'data'
 
 # Ensure the models directory exists
 if not os.path.exists(MODEL_FOLDER):
@@ -24,12 +24,21 @@ def create_model():
 
 @train_bp.route('/train', methods=['POST'])
 def train():
-    # Check if data exists
-    if not os.path.exists(DATA_FILE):
-        return jsonify({"message": "Data file not found. Please download the data first."})
+    # Retrieve the symbol from the request parameters
+    symbol = request.args.get('symbol')
+    if not symbol:
+        return jsonify({"message": "Symbol parameter is missing."})
+
+    # Sanitize the symbol by replacing slashes with underscores
+    sanitized_symbol = symbol.replace('/', '_')
+    data_file = os.path.join(DATA_FOLDER, f'{sanitized_symbol}.csv')
+
+    # Check if data file exists
+    if not os.path.exists(data_file):
+        return jsonify({"message": f"Data file for symbol '{symbol}' not found. Please upload the data first."})
 
     # Load data from the CSV file
-    df = pd.read_csv(DATA_FILE)
+    df = pd.read_csv(data_file)
 
     # Prepare data for training
     X = df[['bid', 'ask']].values  # Using both 'bid' and 'ask' as features
@@ -44,7 +53,7 @@ def train():
     model.fit(X, y, epochs=1, batch_size=32, verbose=2)  # Train for 1 epoch for simplicity
 
     # Save the model in the .keras format in the models subfolder
-    model_path = os.path.join(MODEL_FOLDER, 'rnn_model.keras')
+    model_path = os.path.join(MODEL_FOLDER, f'{sanitized_symbol}_rnn_model.keras')
     model.save(model_path)
 
-    return jsonify({"message": "Training completed and model saved!"})
+    return jsonify({"message": f"Training completed and model for symbol '{symbol}' saved!"})

@@ -4,6 +4,9 @@
 # server dependencies
 /server/venv/
 /server/__pycache__/
+/server/data/
+/server/models/
+
 
 # client dependencies
 /client/node_modules

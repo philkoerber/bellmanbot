@@ -42,7 +42,7 @@ const OurConsole = () => {
     <div className="top-0 left-0 w-full p-2 text-pakistan overflow-y-auto z-50">
       <div className="flex justify-between items-center absolute gap-2">
 
-        <Button onClick={fetchHealthStatus} text="Health Status" variant="primary" />
+        <Button onClick={fetchHealthStatus} text="Health Status" variant="secondary" />
         <Button onClick={clearLogs} text="Clear" variant="secondary" />
       </div>
       <ul className="mt-12">
@@ -56,8 +56,9 @@ const OurConsole = () => {
                 ? "text-yellow-400"
                 : "text-red-400"
             }>
-            [{log.type.toUpperCase()}] {log.message}
+            <p className="font-semibold inline">[{log.type.toUpperCase()}]</p> {log.message}
           </li>
+          
         ))}
       </ul>
     </div>

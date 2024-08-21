@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // https://coolors.co/143109-aaae7f-d0d6b3-f7f7f7-efefef
-        pakistan: "#143109",
+        // https://coolors.co/1C440D-aaae7f-d0d6b3-f7f7f7-efefef
+        pakistan: "#1C440D",
         sage: "#AAAE7F",
         beige: "#D0D6B3",
         seasalt: "#F7F7F7",
