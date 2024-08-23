@@ -16,7 +16,7 @@ if not os.path.exists(MODEL_FOLDER):
 # Define a simple RNN model
 def create_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.SimpleRNN(50, activation='relu', input_shape=(1, 2)),  # Input shape adjusted for bid and ask
+        tf.keras.layers.SimpleRNN(50, activation='relu', input_shape=(1, 4)),  # Input shape adjusted for open, high, low, volume
         tf.keras.layers.Dense(1)
     ])
     model.compile(optimizer='adam', loss='mse')
@@ -41,8 +41,8 @@ def train():
     df = pd.read_csv(data_file)
 
     # Prepare data for training
-    X = df[['bid', 'ask']].values  # Using both 'bid' and 'ask' as features
-    y = df['bid'].shift(-1).fillna(df['bid']).values  # Predicting the next bid (shifted by one time step)
+    X = df[['open', 'high', 'low', 'volume']].values  # Using 'open', 'high', 'low', and 'volume' as features
+    y = df['close'].shift(-1).fillna(df['close']).values  # Predicting the next close (shifted by one time step)
     
     # Reshape the data for the RNN model
     X = X.reshape((X.shape[0], 1, X.shape[1]))  # Reshape for RNN input, with sequence length 1

@@ -3,6 +3,7 @@ import { create } from "zustand";
 interface LogEntry {
   message: string;
   type: string;
+  timestamp: string; // Change to string for time representation
 }
 
 interface LogStore {
@@ -16,13 +17,21 @@ const useLogStore = create<LogStore>((set) => ({
     {
       message: "Console up and running. Welcome to the bellmanBot v1",
       type: "log",
+      timestamp: new Date().toLocaleTimeString(), // Initialize with current time
     },
   ],
 
   // Add a log entry
   addLog: (message, type) =>
     set((state) => ({
-      logs: [...state.logs, { message, type }],
+      logs: [
+        ...state.logs,
+        {
+          message,
+          type,
+          timestamp: new Date().toLocaleTimeString(), // Include only time
+        },
+      ],
     })),
 
   // Clear all log entries

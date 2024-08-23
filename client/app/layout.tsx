@@ -24,12 +24,12 @@ export default function RootLayout({
           </div>
 
           {/* Right: Main Application Content with Background Image */}
-          <div className="relative w-2/3 h-full flex items-center justify-center bg-gradient-radial from-antiwhite via-seasalt overflow-hidden">
+          <div className="relative w-2/3 h-full bg-gradient-radial from-antiwhite via-seasalt overflow-x-hidden">
             {/* SVG Background Image */}
             <img
               src="/bell.svg"
               alt="Background SVG"
-              className="absolute max-w-[400px] w-[50%] h-auto object-contain opacity-[5%] blur-sm z-0"
+              className="absolute max-w-[400px] w-[50%] h-auto object-contain opacity-[15%] blur-sm z-0"
               style={{
                 top: "50%",
                 left: "50%",
@@ -37,7 +37,7 @@ export default function RootLayout({
               }}
             />
             {/* Main Content */}
-            <div className="relative z-10">{children}</div>
+            <div className="relative z-10 p-2">{children}</div>
           </div>
         </div>
       </body>
