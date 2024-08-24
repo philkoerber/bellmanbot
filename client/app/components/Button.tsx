@@ -15,7 +15,7 @@ const Button: FC<ButtonProps> = ({
   variant = "primary",
   disabled = false,
 }) => {
-  const baseClasses = `px-4 py-2 font-semibold rounded-sm text-seasalt hover:bg-beige active:blur-sm transition duration-100`;
+  const baseClasses = `px-2 py-1 text-sm rounded-sm text-seasalt hover:bg-beige active:blur-sm transition duration-100 w-fit`;
   const variantClasses = {
     primary: "bg-pakistan",
     secondary: "bg-sage",

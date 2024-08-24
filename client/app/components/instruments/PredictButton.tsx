@@ -1,4 +1,4 @@
-// PredictButton.js
+"use client"
 
 import React from 'react';
 import useLogStore from "@/app/store/useLogStore";

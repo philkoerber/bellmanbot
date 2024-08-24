@@ -1,9 +1,12 @@
+"use client"
+
 import { create } from "zustand";
+import { useEffect } from "react";
 
 interface LogEntry {
   message: string;
   type: string;
-  timestamp: string; // Change to string for time representation
+  timestamp: string;
 }
 
 interface LogStore {
@@ -17,11 +20,10 @@ const useLogStore = create<LogStore>((set) => ({
     {
       message: "Console up and running. Welcome to the bellmanBot v1",
       type: "log",
-      timestamp: new Date().toLocaleTimeString(), // Initialize with current time
+      timestamp: "Good day!", // Placeholder during SSR
     },
   ],
 
-  // Add a log entry
   addLog: (message, type) =>
     set((state) => ({
       logs: [
@@ -29,13 +31,21 @@ const useLogStore = create<LogStore>((set) => ({
         {
           message,
           type,
-          timestamp: new Date().toLocaleTimeString(), // Include only time
+          timestamp: new Date().toLocaleTimeString(),
         },
       ],
     })),
 
-  // Clear all log entries
   clearLogs: () => set({ logs: [] }),
 }));
+
+// Custom hook to update the initial log timestamp after hydration
+export const useInitializeLogs = () => {
+  const updateLogTimestamp = useLogStore((state) => state.addLog);
+  
+  useEffect(() => {
+    updateLogTimestamp("Console initialized", "log");
+  }, []);
+};
 
 export default useLogStore;

@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import Button from '../Button'; // Adjust the import path according to your file structure
 import useLogStore from "@/app/store/useLogStore";

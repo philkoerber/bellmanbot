@@ -11,11 +11,14 @@ CORS(app)  # Enable CORS
 from train import train_bp
 from predict import predict_bp
 from download import download_bp
+from metadata import metadata_bp
+
 
 # Register the blueprints
 app.register_blueprint(train_bp, url_prefix='/api')
 app.register_blueprint(predict_bp, url_prefix='/api')
 app.register_blueprint(download_bp, url_prefix='/api')
+app.register_blueprint(metadata_bp, url_prefix='/api')
 
 # Store the start time of the server
 start_time = time.time()
