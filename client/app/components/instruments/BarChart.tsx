@@ -1,11 +1,10 @@
-"use client"
+"use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResponsiveBar } from '@nivo/bar';
-import dummydata from '../dummydata';
-import config from '@/tailwind.config';
+import dummydata from "../dummydata"
+import useMetadataStore from '@/app/store/useMetadataStore';
 
-// Updated interface to reflect training data
 interface TrainingBarDatum {
     timestamp: string;
     training_loss: number;
@@ -14,12 +13,18 @@ interface TrainingBarDatum {
     learning_rate: number;
 }
 
-// Updating the component to use the new type
 interface BarChartProps {
-    data: TrainingBarDatum[];
+    symbol: string
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data }) => {
+const BarChart: React.FC<BarChartProps> = ({ symbol }) => {
+    const [chartData, setChartData] = useState<TrainingBarDatum[]>([]);
+    const instruments = useMetadataStore((state)=>state.instruments)
+    useEffect(() => {
+        console.log(instruments[symbol].models)
+       
+    }, []);
+
     return (
         <ResponsiveBar
             data={dummydata}
@@ -44,7 +49,6 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
                 tickRotation: 0,
                 legendPosition: 'middle',
                 legendOffset: -40,
-                
             }}
             enableGridX={false}
             enableGridY={false}
@@ -62,4 +66,4 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     );
 };
 
-export default BarChart;
+export default BarChart

@@ -3,7 +3,7 @@
 import React from 'react';
 import useLogStore from "@/app/store/useLogStore";
 import Button from '../Button';
-import { InstrumentProps } from './types';
+import { InstrumentProps } from '@/app/globals';
 
 
 

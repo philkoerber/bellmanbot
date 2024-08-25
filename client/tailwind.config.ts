@@ -9,7 +9,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // https://coolors.co/1C440D-aaae7f-d0d6b3-f7f7f7-efefef
         pakistan: '#1C440D',
         sage: '#AAAE7F',
         beige: '#D0D6B3',
@@ -21,6 +20,15 @@ const config: Config = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: "0" },
+          '100%': { opacity: "1" },
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 1s ease-in-out forwards',
       },
     },
   },
