@@ -1,12 +1,13 @@
 from flask import Blueprint, jsonify, request
 import os
-import glob
+import json
 from datetime import datetime
 
 metadata_bp = Blueprint('metadata', __name__)
 
 DATA_FOLDER = 'data'
 MODELS_FOLDER = 'models'
+RESULTS_FOLDER = os.path.join(MODELS_FOLDER, 'results')
 
 def get_file_metadata(file_path):
     """ Helper function to get metadata about a file """
@@ -22,6 +23,14 @@ def get_file_metadata(file_path):
         'last_modified': last_modified
     }
 
+def get_results_metadata(symbol):
+    """ Helper function to get the results metadata for a symbol """
+    results_file_path = os.path.join(RESULTS_FOLDER, f'{symbol}.json')
+    if os.path.exists(results_file_path):
+        with open(results_file_path, 'r') as f:
+            return json.load(f)
+    return None
+
 @metadata_bp.route('/metadata', methods=['GET'])
 def get_metadata():
     symbol = request.args.get('symbol', 'AAPL')
@@ -31,22 +40,14 @@ def get_metadata():
     data_file_path = os.path.join(DATA_FOLDER, f'{safe_symbol}.csv')
     data_file_metadata = get_file_metadata(data_file_path)
     
-    # Check if model exists for the symbol and get its metadata
-    model_files = glob.glob(os.path.join(MODELS_FOLDER, f'{safe_symbol}_*.h5'))
-    model_metadata = {}
-    
-    if model_files:
-        for model_file in model_files:
-            model_name = os.path.basename(model_file).split('.')[0]
-            model_metadata[model_name] = get_file_metadata(model_file)
-    else:
-        model_metadata = None
+    # Get results metadata
+    results_metadata = get_results_metadata(safe_symbol)
 
     # Compile the metadata
     metadata = {
         'symbol': symbol,
         'data_file': data_file_metadata,
-        'models': model_metadata
+        'results': results_metadata
     }
 
     return jsonify(metadata)

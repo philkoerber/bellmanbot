@@ -3,10 +3,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import TrainButton from "./TrainButton";
 import DownloadButton from "./DownloadButton";
 import PredictButton from "./PredictButton";
-import BarChart from "./BarChart";
 import useMetadataStore from "@/app/store/useMetadataStore"; // Import the metadata store
 import useLogStore from "@/app/store/useLogStore";
 import { InstrumentProps, InstrumentMetadata } from '@/app/globals';
+import PieChart from "./PieChart";
 
 const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
   const addInstrument = useMetadataStore((state) => state.addInstrument);
@@ -51,8 +51,8 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
         <PredictButton symbol={symbol} />
       </div>
 
-      <div className="h-full w-1/2">
-        <BarChart symbol={symbol} />
+      <div className="h-full w-1/3">
+        <PieChart symbol={symbol} />
       </div>
     </div>
   );
