@@ -1,11 +1,11 @@
 from celery import Celery
 
-def make_celery(app):
-    # Configure Celery to use Redis as the message broker and backend
+def make_celery(app=None):
     celery = Celery(
-        app.import_name,
-        broker='redis://localhost:6379/0',
-        backend='redis://localhost:6379/0'
+        app.import_name if app else __name__,
+        broker='redis://redis:6379/0',  # Redis service URL
+        backend='redis://redis:6379/0'  # Redis service URL
     )
-    celery.conf.update(app.config)
+    if app is not None:
+        celery.conf.update(app.config)
     return celery

@@ -1,12 +1,10 @@
-# server/Dockerfile
-
 # Use an official Python image as the base image
 FROM python:3.11
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Ignore pip error warning
+# Ignore pip error warnings
 ENV PIP_ROOT_USER_ACTION=ignore
 
 # Copy the requirements file
@@ -16,7 +14,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the rest of the application code
-#COPY . .
+COPY . .
 
 # Expose the port the Flask app runs on
 EXPOSE 5000

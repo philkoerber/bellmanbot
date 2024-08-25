@@ -1,8 +1,12 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from celery_config import make_celery
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
+
+# Configure Celery with the Flask app instance
+celery = make_celery(app)
 
 # Import the blueprints
 from train import train_bp
@@ -20,7 +24,7 @@ app.register_blueprint(health_bp, url_prefix='/api')  # Register the health blue
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Welcome to the Flask server!"})
+    return jsonify({"message": "Welcome to the Bellmanbot Flask server!"})
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)
