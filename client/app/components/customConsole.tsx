@@ -11,6 +11,7 @@ const OurConsole = () => {
   const hasFetched = useRef(false);
 
   const fetchHealthStatus = async () => {
+    addLog("Fetching health status...", "log");
     try {
       const response = await fetch("/api/health_status", {
         method: "GET",

@@ -61,7 +61,7 @@ def train():
 
         history = model.fit(
             X_train, y_train,
-            epochs=5,
+            epochs=30,
             batch_size=32,
             validation_data=(X_val, y_val),
             verbose=2
@@ -76,7 +76,8 @@ def train():
             "loss": history.history['loss'][-1],  # Latest loss value
             "accuracy": history.history.get('accuracy', [None])[-1],  # Accuracy, default to None
             "val_loss": history.history.get('val_loss', [None])[-1],  # Validation loss, default to None
-            "val_accuracy": history.history.get('val_accuracy', [None])[-1]  # Validation accuracy, default to None
+            "val_accuracy": history.history.get('val_accuracy', [None])[-1],  # Validation accuracy, default to None
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Current timestamp
         }
 
         # Save results to JSON

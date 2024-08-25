@@ -11,33 +11,30 @@ interface PieChartProps {
 
 const PieChart: React.FC<PieChartProps> = ({ symbol }) => {
     const instruments = useMetadataStore((state)=>state.instruments);
+    
 
     const pieChartData = [
         {
             "id": "Training Loss",
             "label": "Training Loss",
-            "value": dummydata[0].loss,
+            "value": instruments[symbol]?.results?.loss,
         },
         {
             "id": "Validation Loss",
             "label": "Validation Loss",
-            "value": dummydata[0].val_loss,
+            "value": instruments[symbol]?.results?.val_loss,
         },
         {
             "id": "Accuracy",
             "label": "Accuracy",
-            "value": dummydata[0].accuracy,  // Assuming you want to show accuracy as a percentage
+            "value": instruments[symbol]?.results?.accuracy,  // Assuming you want to show accuracy as a percentage
         },
         {
             "id": "Validation Accuracy",
             "label": "Validation Accuracy",
-            "value": dummydata[0].val_accuracy,  // Assuming you want to show validation accuracy as a percentage
+            "value": instruments[symbol]?.results?.val_accuracy,  // Assuming you want to show validation accuracy as a percentage
         }
     ];
-
-    useEffect(() => {
-        console.log(instruments[symbol]?.results);
-    }, [instruments[symbol]]);
 
     return (
         <ResponsivePie

@@ -18,4 +18,5 @@ interface TrainingResults {
   accuracy?: number;    // Optional field for accuracy if available
   val_loss?: number;    // Optional field for validation loss if available
   val_accuracy?: number; // Optional field for validation accuracy if available
+  timestamp: string
 }
