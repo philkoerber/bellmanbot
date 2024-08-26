@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import OurConsole from "./components/customConsole";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,22 +24,25 @@ export default function RootLayout({
             <OurConsole />
           </div>
 
-          {/* Right: Main Application Content with Background Image */}
-          <div className="relative w-2/3 h-full bg-gradient-to-tr from-antiwhite via-seasalt overflow-x-hidden">
-            {/* SVG Background Image */}
-            <img
-              src="/bell.svg"
-              alt="Background SVG"
-              className="absolute max-w-[400px] w-[50%] h-auto object-contain opacity-[15%] blur-sm z-0"
-              style={{
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-            {/* Main Content */}
+          {/* Right: Main Application*/}
+          <div className="w-2/3 h-full bg-gradient-to-tr from-antiwhite via-seasalt overflow-x-hidden relative">  
             <div className="relative z-10 p-2">{children}</div>
           </div>
+          {/* Background Image*/}
+          <div className="fixed flex justify-center items-center">
+              <Image
+                 width={400}
+                 height={400}
+                 src="/bell.svg"
+                 alt="Background SVG"
+                 className="fixed max-w-[400px] w-[50%] h-auto object-contain opacity-[15%] blur-sm z-0"
+                 style={{
+                   top: "50%",
+                   left: "66%",
+                   transform: "translate(-50%, -50%)",
+                 }}
+               />
+              </div>
         </div>
       </body>
     </html>

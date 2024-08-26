@@ -48,14 +48,12 @@ def train_model(self, symbol):
         model.save(model_path)
 
         results = {
-            "loss": history.history['loss'][-1],
-            "accuracy": history.history.get('accuracy', [None])[-1],
-            "val_loss": history.history.get('val_loss', [None])[-1],
-            "val_accuracy": history.history.get('val_accuracy', [None])[-1],
+            "final_training_loss": history.history['loss'][-1],
+            "final_validation_loss": history.history.get('val_loss', [None])[-1],
             "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
 
-        results_path = os.path.join('models', 'results', f'{sanitized_symbol}.json')
+        results_path = os.path.join('models', 'results', f'{sanitized_symbol}_log.json')
         with open(results_path, 'w') as f:
             json.dump(results, f)
 
