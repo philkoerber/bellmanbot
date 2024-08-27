@@ -13,6 +13,7 @@ from train import train_bp
 from predict import predict_bp
 from download import download_bp
 from metadata import metadata_bp
+from job_status import job_status_bp
 from health import health_bp  # Import the health blueprint
 
 # Register the blueprints
@@ -20,7 +21,9 @@ app.register_blueprint(train_bp, url_prefix='/api')
 app.register_blueprint(predict_bp, url_prefix='/api')
 app.register_blueprint(download_bp, url_prefix='/api')
 app.register_blueprint(metadata_bp, url_prefix='/api')
-app.register_blueprint(health_bp, url_prefix='/api')  # Register the health blueprint
+app.register_blueprint(health_bp, url_prefix='/api')
+app.register_blueprint(job_status_bp, url_prefix='/api')
+
 
 @app.route('/')
 def home():

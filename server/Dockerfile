@@ -19,5 +19,5 @@ COPY . .
 # Expose the port the Flask app runs on
 EXPOSE 5000
 
-# Start the Flask API
-CMD ["python3", "server.py"]
+# Start Flask API and Celery worker
+CMD ["sh", "-c", "celery -A tasks.celery worker --loglevel=info & python3 server.py"]

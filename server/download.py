@@ -11,7 +11,7 @@ TWELVEDATA_API_KEY = os.getenv('TWELVEDATA_API_KEY') or '83a3ab2d88ff4292a6b446d
 INTERVAL = os.getenv('INTERVAL') or '1min'
 OUTPUTSIZE = 4000  # Set to the maximum allowed by the API for one request
 DATA_FOLDER = 'data'
-TOTAL_RECORDS = 16000  # Number of records you want to retrieve for testing
+TOTAL_RECORDS = 50000  # Number of records you want to retrieve for testing
 
 # Ensure the data directory exists
 if not os.path.exists(DATA_FOLDER):

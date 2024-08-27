@@ -28,4 +28,4 @@ def train():
     # Call the Celery task
     task = train_model.delay(sanitized_symbol)
 
-    return jsonify({"message": f"Training started for symbol '{symbol}'. Task ID: {task.id}"}), 202
+    return jsonify({"message": f"Training started for symbol '{symbol}'", "job_id": task.id}), 202

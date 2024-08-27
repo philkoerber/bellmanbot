@@ -3,7 +3,5 @@ flask-cors
 psutil
 pandas
 tensorflow
-celery
+celery[redis]
 redis
-
-

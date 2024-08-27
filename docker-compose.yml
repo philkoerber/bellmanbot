@@ -11,6 +11,8 @@ services:
       - ./client:/app
     depends_on:
       - server
+    environment:
+      - REACT_APP_SERVER_URL=http://server:5000  # Ensuring the client knows where the server is
 
   server:
     build:
@@ -22,6 +24,11 @@ services:
       - ./server:/app
     depends_on:
       - redis  # Ensure Redis is started before server
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0  # Ensure Celery knows where Redis is
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    links:
+      - redis  # Explicitly link Redis for older Docker versions
 
   redis:
     image: redis:latest

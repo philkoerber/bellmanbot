@@ -55,8 +55,10 @@ const TrainButton: React.FC<InstrumentProps> = ({ symbol }) => {
   const pollJobStatus = async (jobId: string) => {
     try {
       const response = await fetch(`/api/job_status?job_id=${jobId}`);
+      
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
+      console.log(data)
       setStatus(data.status);
 
       if (data.status === 'completed') {
@@ -101,12 +103,11 @@ const TrainButton: React.FC<InstrumentProps> = ({ symbol }) => {
         onClick={handleTrainButton}
         disabled={loading} // Disable the button while loading
       />
-      {status && <p>Status: {status}</p>}
+      {status && <p className="text-[10px] text-sage mt-1 h-5">Status: {status}</p>}
       {results && (
-        <div>
-          <h3>Training Results</h3>
-          <pre>{JSON.stringify(results, null, 2)}</pre>
-        </div>
+          <p className="text-[10px] text-sage mt-1 h-7">
+          {JSON.stringify(results, null, 2)}
+      </p>
       )}
     </div>
   );
