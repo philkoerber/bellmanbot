@@ -24,7 +24,6 @@ app.register_blueprint(metadata_bp, url_prefix='/api')
 app.register_blueprint(health_bp, url_prefix='/api')
 app.register_blueprint(job_status_bp, url_prefix='/api')
 
-
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to the Bellmanbot Flask server!"})

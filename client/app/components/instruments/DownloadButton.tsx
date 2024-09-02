@@ -21,28 +21,36 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   addLog,
 }) => {
 
-  const handleDownloadButton = () => {
+  const handleDownloadButton = async () => {
     addLog(`Starting download for instrument ${symbol}`, "log");
     setLoading(true); // Disable button while downloading
 
-    const eventSource = new EventSource(`/api/download?symbol=${symbol}`);
+    try {
+      const response = await fetch(`/api/download?symbol=${symbol}`, { method: 'POST' });
 
-    eventSource.onmessage = (event) => {
-      addLog(event.data, "log");
-
-      if (event.data.includes("Download complete")) {
-        eventSource.close();
-        fetchDownloadedMetadata(); // Fetch metadata again after download completes
-        setLoading(false); // Re-enable button after completion
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    };
 
-    eventSource.onerror = (error) => {
-      addLog("Error in downloading data", "error");
-      console.error("SSE error:", error);
-      eventSource.close();
-      setLoading(false); // Re-enable button on error
-    };
+      const data = await response.json();
+      
+      if (data.job_id) {
+        addLog(`Download started with job ID ${data.job_id}`, "log");
+        
+        // Optionally, you can implement a polling mechanism to check the status of the job periodically
+        // until it completes. This will help to keep an eye on the job progress.
+        
+        setLoading(false); // Re-enable button after initiating the download process
+      } else {
+        throw new Error('No job ID received');
+      }
+
+    } catch (error) {
+      addLog(`Error in downloading data: ${error}`, "error");
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false); // Re-enable button on error or after process completion
+    }
   };
 
   return (
