@@ -36,12 +36,12 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
   }, [fetchDownloadedMetadata]);
 
   return (
-    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px]">
+    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm flex gap-2 h-[200px]">
+      <div className="flex flex-col w-24 gap-2">
       <h1 className="text-xl text-pakistan font-extralight overflow-hidden whitespace-nowrap text-ellipsis">
-  {symbol} 
+  {symbol}
 </h1>
-<div className="flex gap-8">
-<DownloadButton
+        <DownloadButton
           symbol={symbol}
           lastModified={lastModified}
           setLoading={setLoading}
@@ -51,9 +51,12 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
         />
         <TrainButton symbol={symbol} />
         <PredictButton symbol={symbol} />
-</div>
-        
       </div>
+
+      <div className="h-full w-full">
+        <PieChart symbol={symbol} />
+      </div>
+    </div>
   );
 };
 
