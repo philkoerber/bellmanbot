@@ -58,13 +58,21 @@ const TrainButton: React.FC<InstrumentProps> = ({ symbol }) => {
       
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       setStatus(data.status);
 
-      if (data.status === 'completed') {
+      if (data.status === 'SUCCESS') {
         clearInterval(intervalId as NodeJS.Timeout);
         setIntervalId(null);
         await fetchResults(jobId);
+      } else if (data.status === 'PENDING') {
+        // Continue polling if status is 'pending'
+        return;
+      } else {
+        // Handle unexpected status
+        clearInterval(intervalId as NodeJS.Timeout);
+        setIntervalId(null);
+        addLog(`Job status is ${data.status}, which is unexpected`, "error");
       }
     } catch (error) {
       console.error("Error polling job status:", error);

@@ -54,17 +54,17 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   };
 
   return (
-    <>
+    <div>
       <Button
         text="Download"
         variant="primary"
         onClick={handleDownloadButton}
         disabled={loading} // Disable the button when loading
       />
-      <p className="text-[10px] text-sage -mt-1 h-7">
+      <p className="text-[10px] text-sage mt-1 h-7">
         {lastModified}
       </p>
-    </>
+    </div>
   );
 };
 

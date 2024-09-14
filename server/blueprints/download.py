@@ -17,10 +17,7 @@ def download_data():
     if not symbol:
         return jsonify({"message": "Symbol parameter is missing."}), 400
 
-    # Sanitize the symbol
-    sanitized_symbol = symbol.replace('/', '_')
-
     # Call the Celery task
-    task = celery.send_task('tasks.download_data', args=[sanitized_symbol])
+    task = celery.send_task('tasks.download_data', args=[symbol])
 
     return jsonify({"message": f"Download started for symbol '{symbol}'", "job_id": task.id}), 202

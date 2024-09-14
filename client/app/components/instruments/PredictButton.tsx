@@ -29,11 +29,14 @@ const PredictButton :React.FC<InstrumentProps> = ({ symbol }) => {
   };
 
   return (
-    <Button
+    <div>
+ <Button
       text="Predict"
       variant="primary"
       onClick={handlePredictButton} // Bind handlePredictButton to the button click
     />
+    </div>
+   
   );
 };
 
