@@ -1,7 +1,8 @@
-flask
-flask-cors
-psutil
-pandas
-tensorflow
-celery[redis]
-redis
+flask==2.3.3              # Stable Flask version
+flask-cors==5.0.0        # Stable Flask-CORS version
+psutil==5.9.5             # Mature version of psutil
+pandas==1.5.3             # Stable version of pandas
+tensorflow==2.17.0        # TensorFlow LTS version
+celery[redis]==5.2.7      # Stable Celery version with Redis support
+redis==4.5.5              # Stable Redis-py version
+scikit-learn==1.2.2       # Stable version of scikit-learn (sklearn)
