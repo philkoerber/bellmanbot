@@ -17,4 +17,6 @@ def make_celery(app=None):
         task_serializer='json',
     )
 
+    celery.autodiscover_tasks(['tasks'])
+
     return celery

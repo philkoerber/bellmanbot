@@ -18,6 +18,6 @@ def download_data():
         return jsonify({"message": "Symbol parameter is missing."}), 400
 
     # Call the Celery task
-    task = celery.send_task('tasks.download_data', args=[symbol])
+    task = celery.send_task('download_data', args=[symbol])
 
     return jsonify({"message": f"Download started for symbol '{symbol}'", "job_id": task.id}), 202

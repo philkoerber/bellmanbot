@@ -4,7 +4,6 @@ import os
 import pandas as pd
 import json
 from datetime import datetime
-from tasks import train_model  # Import the Celery task
 
 train_bp = Blueprint('train', __name__)
 
@@ -26,6 +25,6 @@ def train():
     sanitized_symbol = symbol.replace('/', '_')
 
     # Call the Celery task
-    task = train_model.delay(sanitized_symbol)
+    task = celery.send_task('train_model', args=[sanitized_symbol])
 
     return jsonify({"message": f"Training started for symbol '{symbol}'", "job_id": task.id}), 202
