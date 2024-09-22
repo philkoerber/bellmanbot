@@ -6,10 +6,6 @@ download_bp = Blueprint('download', __name__)
 
 # Configuration
 TWELVEDATA_API_KEY = os.getenv('TWELVEDATA_API_KEY') or '83a3ab2d88ff4292a6b446d30b5d27bc'
-DATA_FOLDER = 'data'
-
-# Ensure the data directory exists
-os.makedirs(DATA_FOLDER, exist_ok=True)
 
 @download_bp.route('/download', methods=['POST'])
 def download_data():

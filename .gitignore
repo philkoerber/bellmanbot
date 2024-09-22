@@ -1,43 +1,66 @@
-# dev dependencies
-.vscode
+# Dev tools
+.vscode/
+__pycache__/
 
-# server dependencies
+# Python virtual environment
 /server/venv/
-/server/__pycache__/
-/server/data/
-/server/models/
 
+# Data and models (these might be generated during processing)
+server/data/
+server/models/
 
-# client dependencies
-/client/node_modules
-/client/.pnp
+# Node modules and build files
+/client/node_modules/
+/client/.pnp/
 /client/.pnp.js
 
-# testing
-/client/coverage
-
-# next.js
+# Next.js build outputs
 /client/.next/
 /client/out/
+/client/build/
 
-# production
-/client/build
+# Testing coverage
+/client/coverage/
 
-# misc
+# Miscellaneous
 /client/.DS_Store
 /client/*.pem
 
-# debug
+# Debug logs
 /client/npm-debug.log*
 /client/yarn-debug.log*
 /client/yarn-error.log*
 
-# local env files
+# Local environment files
 /client/.env*.local
 
-# vercel
-/client/.vercel
+# Vercel configuration (optional if not using Vercel)
+/client/.vercel/
 
-# typescript
+# TypeScript build info
 /client/*.tsbuildinfo
 /client/next-env.d.ts
+
+# TensorFlow cache or other large framework cache
+~/.keras/
+~/.tensorflow/
+
+# Docker-related (optional if you don’t want to track image layers or containers)
+/server/*.dockerfile
+/docker-compose.yml
+
+# Ignore compiled Python files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.whl
+
+# Remove Celery log files or Redis dumps
+celerybeat-schedule
+*.pid
+*.rdb
+
+# Cache
+.cache/
+*.log

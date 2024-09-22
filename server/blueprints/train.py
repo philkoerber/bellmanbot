@@ -7,13 +7,6 @@ from datetime import datetime
 
 train_bp = Blueprint('train', __name__)
 
-MODEL_FOLDER = 'models'
-DATA_FOLDER = 'data'
-RESULTS_FOLDER = os.path.join(MODEL_FOLDER, 'results')
-
-# Ensure the models and results directories exist
-os.makedirs(MODEL_FOLDER, exist_ok=True)
-os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
 @train_bp.route('/train', methods=['POST'])
 def train():

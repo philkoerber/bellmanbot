@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import tensorflow as tf
 import json
 from sklearn.preprocessing import MinMaxScaler
@@ -10,8 +11,10 @@ celery = make_celery()
 
 # Configuration Constants
 MODELS_FOLDER = 'models'
+DATA_FOLDER = 'data'
 
 os.makedirs(MODELS_FOLDER, exist_ok=True)
+os.makedirs(DATA_FOLDER, exist_ok=True)
 
 # Function to create the model
 def create_model():
@@ -31,7 +34,7 @@ def create_sequences(X, y, time_steps=5):
     return np.array(Xs), np.array(ys)
 
 # Task to train the model
-@celery.task(bind=True)
+@celery.task(name="train_model",bind=True)
 def train_model(self, symbol):
     try:
         print(f"Starting training for symbol: {symbol}")

@@ -6,6 +6,7 @@ import tensorflow as tf
 from datetime import datetime
 from celery_config import make_celery
 
+
 celery = make_celery()
 
 # Configuration Constants
