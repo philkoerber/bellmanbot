@@ -1,8 +1,14 @@
 flask==2.3.3              # Stable Flask version
 flask-cors==5.0.0        # Stable Flask-CORS version
+celery[redis]==5.2.7      # Stable Celery version with Redis support
+redis==4.5.5              # Stable Redis-py version
+
+flask-socketio==5.2.0     # stable with docker?
+eventlet==0.37.0
+
+
 psutil==5.9.5             # Mature version of psutil
 pandas==1.5.3             # Stable version of pandas
 tensorflow==2.17.0        # TensorFlow LTS version
-celery[redis]==5.2.7      # Stable Celery version with Redis support
-redis==4.5.5              # Stable Redis-py version
+
 scikit-learn==1.2.2       # Stable version of scikit-learn (sklearn)

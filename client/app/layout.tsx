@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import OurConsole from "./components/customConsole";
 import Image from "next/image";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -16,6 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
+
     <html lang="en">
       <body className={inter.className}>
         <div className="h-[100vh] flex">
