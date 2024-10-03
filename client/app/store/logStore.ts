@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
 import { create } from "zustand";
 import { useEffect } from "react";
 
 interface LogEntry {
   message: string;
-  type: string;
+  type: "log" | "error" | "warning"; // Only these three types are allowed
   timestamp: string;
 }
 
 interface LogStore {
   logs: LogEntry[];
-  addLog: (message: string, type: string) => void;
+  addLog: (message: string, type: "log" | "error" | "warning") => void; // Restrict to the same types here
   clearLogs: () => void;
 }
 
@@ -20,7 +20,7 @@ const useLogStore = create<LogStore>((set) => ({
     {
       message: "Console up and running. Welcome to the bellmanBot v1",
       type: "log",
-      timestamp: "Good day!", // Placeholder during SSR
+      timestamp: "Good day!"
     },
   ],
 
@@ -30,7 +30,7 @@ const useLogStore = create<LogStore>((set) => ({
         ...state.logs,
         {
           message,
-          type,
+          type, // Now strictly of type "log" | "error" | "warning"
           timestamp: new Date().toLocaleTimeString(),
         },
       ],
@@ -42,7 +42,7 @@ const useLogStore = create<LogStore>((set) => ({
 // Custom hook to update the initial log timestamp after hydration
 export const useInitializeLogs = () => {
   const updateLogTimestamp = useLogStore((state) => state.addLog);
-  
+
   useEffect(() => {
     updateLogTimestamp("Console initialized", "log");
   }, []);

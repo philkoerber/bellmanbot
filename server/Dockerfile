@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 5000
 
 # Start Flask API and Celery worker
-CMD ["sh", "-c", "celery -A tasks worker --loglevel=info & python3 server.py"]
+CMD ["sh", "-c", "celery -A tasks worker --loglevel=info -P eventlet & python3 server.py"]

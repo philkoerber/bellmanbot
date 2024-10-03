@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Button from '../Button'; // Adjust the import path according to your file structure
-import useLogStore from "@/app/store/useLogStore";
+import useLogStore from "@/app/store/logStore";
 import { InstrumentProps } from '@/app/globals';
 
 const TrainButton: React.FC<InstrumentProps> = ({ symbol }) => {

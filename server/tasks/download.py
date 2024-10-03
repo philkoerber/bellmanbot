@@ -5,6 +5,7 @@ import pandas as pd
 import tensorflow as tf
 from datetime import datetime
 from celery_config import make_celery
+from server import socketio
 
 
 celery = make_celery()
@@ -13,7 +14,7 @@ celery = make_celery()
 TWELVEDATA_API_KEY = os.getenv('TWELVEDATA_API_KEY') or '83a3ab2d88ff4292a6b446d30b5d27bc'
 OUTPUTSIZE = 4000  # Maximum allowed by the API for one request
 DATA_FOLDER = 'data'
-TOTAL_RECORDS = 10000  # Number of records you want to retrieve for testing
+TOTAL_RECORDS = 1000000  # Number of records you want to retrieve for testing
 
 # Ensure the data and models directories exist.
 os.makedirs(DATA_FOLDER, exist_ok=True)
@@ -21,11 +22,14 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 # Task to download data using TwelveData API
 @celery.task(name='download_data', bind=True)
 def download_data(self, symbol):
+    
     try:
         total_data = []
         end_date = os.getenv('END_DATE') or datetime.now().strftime('%Y-%m-%d')
         safe_symbol = symbol.replace('/', '_')
         data_file = os.path.join(DATA_FOLDER, f'{safe_symbol}.csv')
+
+        socketio.emit("download_progress", {'status': "pending", 'message': "starting download...", "symbol": symbol})
 
         with open(data_file, mode='w', newline='') as file:
             writer = csv.writer(file)
@@ -47,6 +51,7 @@ def download_data(self, symbol):
                 data = response.json()
                 if 'values' not in data:
                     error_message = f"Error fetching data for {safe_symbol}: {data.get('message', 'Unknown error')}"
+                    socketio.emit("download_progress", {'status': "error", 'message': "Something went wrong...", "symbol": symbol})
                     print(f"Error: {error_message}")
                     return {"status": "error", "message": error_message}
 
@@ -62,12 +67,15 @@ def download_data(self, symbol):
                     ])
                     total_data.append(record)
 
+                socketio.emit("download_progress", {'status': "pending", 'message': f"{len(total_data)}/{TOTAL_RECORDS}", "symbol": symbol})
+
                 if len(time_series) < OUTPUTSIZE:
                     break  # If fewer than the output size, we are at the end of the data
 
                 end_date = time_series[-1]['datetime']
 
         print(f"Download complete for {symbol}. Total records: {len(total_data)}")
+        socketio.emit("download_progress", {'status': "success", 'message': "Download complete", "symbol": symbol})
         return {"status": "success", "message": f"Download complete for {symbol}. Total records: {len(total_data)}"}
 
     except Exception as e:

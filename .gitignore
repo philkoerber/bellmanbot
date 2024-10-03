@@ -8,6 +8,8 @@ __pycache__/
 # Data and models (these might be generated during processing)
 server/data/
 server/models/
+server/tasks/__pycache__
+
 
 # Node modules and build files
 /client/node_modules/

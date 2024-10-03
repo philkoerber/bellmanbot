@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react';
-import useLogStore from "@/app/store/useLogStore";
+import useLogStore from "@/app/store/logStore";
 import Button from '../Button';
 import { InstrumentProps } from '@/app/globals';
 
