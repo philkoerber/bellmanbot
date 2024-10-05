@@ -1,14 +1,17 @@
-import { create } from 'zustand';
-import useSocketStore from './socketStore';
+import { create } from "zustand";
+import useSocketStore from "./socketStore";
 
 interface SymbolDownloadProgress {
   message: string;
-  status: string;
+  status: "pending" | "success" | "error" | "loading";
 }
 
 interface DownloadStore {
   downloadProgress: Record<string, SymbolDownloadProgress>;
-  updateDownloadProgress: (symbol: string, data: SymbolDownloadProgress) => void;
+  updateDownloadProgress: (
+    symbol: string,
+    data: SymbolDownloadProgress
+  ) => void;
 }
 
 const useDownloadStore = create<DownloadStore>((set) => ({
@@ -24,8 +27,10 @@ const useDownloadStore = create<DownloadStore>((set) => ({
 
 // Subscribe to updates from socketStore and pass to downloadStore
 const socket = useSocketStore.getState().socket;
-socket.on('download_progress', ({ symbol, message, status }) => {
-  useDownloadStore.getState().updateDownloadProgress(symbol, { message, status });
+socket.on("download_progress", ({ symbol, message, status }) => {
+  useDownloadStore
+    .getState()
+    .updateDownloadProgress(symbol, { message, status });
 });
 
 export default useDownloadStore;
