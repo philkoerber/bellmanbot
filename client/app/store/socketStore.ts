@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { io, Socket } from 'socket.io-client';
-import useLogStore from './logStore';
+import { create } from "zustand";
+import { io, Socket } from "socket.io-client";
+import useLogStore from "./logStore";
 
 const addLog = useLogStore.getState().addLog; // Access the addLog function
 
@@ -10,33 +10,27 @@ interface SocketStore {
   connect: () => void;
 }
 
-const socket = io('http://localhost:5000', {
-  transports: ['websocket'],
+const socket = io("http://localhost:5000", {
+  transports: ["websocket"],
 });
-
 
 const useSocketStore = create<SocketStore>((set) => ({
   socket,
   isConnected: false,
   connect: () => {
-    socket.on('connect', () => {
+    socket.on("connect", () => {
       set({ isConnected: true });
-      addLog("Connected with SocketIO", 'log'); // Log the progress
+      addLog("Connected with SocketIO", "log"); // Log the progress
     });
 
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       set({ isConnected: false });
-      addLog("Disconnected with SocketIO", 'warning'); // Log the progress
+      addLog("Disconnected with SocketIO", "warning"); // Log the progress
     });
 
     // Handle 'download_progress' and log the event
-    socket.on('hello_handshake', ({message}) => {
-      addLog(message, 'log');
-    });
-
-    // Handle 'download_progress' and log the event
-    socket.on('download_progress', ({symbol, message, status}) => {
-      addLog(message, 'log'); // Log the progress
+    socket.on("hello_handshake", ({ message }) => {
+      addLog(message, "log");
     });
   },
 }));

@@ -5,45 +5,69 @@ import Button from "../Button";
 import useDownloadStore from "@/app/store/downloadStore";
 
 const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
-  const { progress, updateProgress } = useDownloadStore((state) => ({
-    progress: state.progress,
-    updateProgress: state.updateProgress,
-  }));
+  const { downloadProgress, updateDownloadProgress } = useDownloadStore(
+    (state) => ({
+      downloadProgress: state.downloadProgress,
+      updateDownloadProgress: state.updateDownloadProgress,
+    })
+  );
 
   const downloadData = async (symbol: string) => {
     try {
-      const response = await fetch(`/api/download?symbol=${symbol}`, { method: 'POST' });
-  
+      const response = await fetch(`/api/download?symbol=${symbol}`, {
+        method: "POST",
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Download failed');
+        throw new Error(errorData.error || "Download failed");
       }
-  
-      const data = await response.json();
-      console.log(data.message); // Log or use the message from the API response
-      updateProgress(symbol, { message: 'Download started...', status: 'in-progress' });
     } catch (error) {
-      console.error('Error:', error);
-      updateProgress(symbol, { message: 'Download failed', status: 'error' });
+      console.error("Error:", error);
+      updateDownloadProgress(symbol, {
+        message: "Download failed",
+        status: "error",
+      });
     }
   };
 
-  const symbolProgress = progress[symbol] || { message: '', status: '' };
-  
+  const symbolDownloadProgress = downloadProgress[symbol] || {
+    message: "TODO mabe fetch metadata",
+    status: "",
+  };
+
   return (
-    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm flex gap-2 h-[200px]">
-      <div className="flex flex-col w-24 gap-2">
-        <h1 className="text-xl text-pakistan font-extralight overflow-hidden whitespace-nowrap text-ellipsis">
-          {symbol}
-        </h1>
-        <Button onClick={() => downloadData(symbol)}>Download</Button>
-        <Button disabled={true}>Train</Button>
-        <Button disabled={true}>Predict</Button>
-        {symbolProgress.message && (
-          <p className="text-sm text-pakistan">
-            {symbolProgress.message} ({symbolProgress.status})
-          </p>
-        )}
+    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px] relative">
+      <h1 className="text-6xl text-sage font-extralight absolute right-0 bottom-0">
+        {symbol}
+      </h1>
+
+      <div className="flex gap-2">
+        {/* DOWNLOAD */}
+        <div className="basis-1/4">
+          <Button
+            disabled={symbolDownloadProgress.status === "pending"}
+            onClick={() => downloadData(symbol)}
+          >
+            Download
+          </Button>
+          <div className="text-sm text-pakistan mt-1">
+            <p>{symbolDownloadProgress.message}</p>
+            <p className="text-xs font-extralight">
+              {symbolDownloadProgress.status}
+            </p>
+          </div>
+        </div>
+
+        {/* TRAIN */}
+        <div className="basis-1/2">
+          <Button disabled={true}>Train</Button>
+        </div>
+
+        {/* PREDICT AND SOME INFOS */}
+        <div className="basis-1/4">
+          <Button disabled={true}>Test</Button>
+        </div>
       </div>
     </div>
   );

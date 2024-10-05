@@ -15,7 +15,7 @@ const Button: FC<ButtonProps> = ({
   disabled = false,
   children, // Destructure children here
 }) => {
-  const baseClasses = `px-2 py-1 text-sm rounded-sm text-seasalt hover:bg-beige active:blur-sm transition duration-100 w-fit`;
+  const baseClasses = `h-8 px-2 py-1 text-sm rounded-sm text-seasalt hover:bg-beige active:blur-sm transition duration-100 w-fit`;
   const variantClasses = {
     primary: "bg-pakistan",
     secondary: "bg-sage",
@@ -30,7 +30,7 @@ const Button: FC<ButtonProps> = ({
       }`}
       disabled={disabled}
     >
-      {children} {/* Use children here */}
+      {children}
     </button>
   );
 };
