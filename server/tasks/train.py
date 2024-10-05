@@ -6,6 +6,8 @@ import json
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 from celery_config import make_celery
+from server import socketio
+
 
 celery = make_celery()
 
@@ -38,6 +40,7 @@ def create_sequences(X, y, time_steps=5):
 def train_model(self, symbol):
     try:
         print(f"Starting training for symbol: {symbol}")
+        socketio.emit("training_progress", {'status': "pending", 'message': "starting training...", "symbol": symbol})
 
         safe_symbol = symbol.replace('/', '_')
         data_file = os.path.join(DATA_FOLDER, f'{safe_symbol}.csv')
@@ -94,6 +97,7 @@ def train_model(self, symbol):
             "final_validation_loss": history.history.get('val_loss', [None])[-1],
             "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+        
 
         results_path = os.path.join(MODELS_FOLDER, 'results', f'{safe_symbol}_log.json')
         os.makedirs(os.path.join(MODELS_FOLDER, 'results'), exist_ok=True)
@@ -101,6 +105,7 @@ def train_model(self, symbol):
             json.dump(results, f)
 
         print(f"Training completed for symbol: {symbol}")
+        socketio.emit("training_progress", {'status': "success", 'message': "Training finished", "symbol": symbol})
         return {"message": f"Training completed and model for symbol '{symbol}' saved!", "results": results}
 
     except Exception as e:

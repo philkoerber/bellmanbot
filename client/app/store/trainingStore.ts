@@ -39,15 +39,13 @@ const socket = useSocketStore.getState().socket;
 socket.on(
   "training_progress",
   ({ symbol, message, status, started, result }) => {
-    // Ensure that the result includes epoch, loss, and optional accuracy
-    const { epoch, loss, accuracy } = result;
-
+    console.log("hi there");
     // Update the training progress in the Zustand store
     useTrainingStore.getState().updateTrainingProgress(symbol, {
       message,
       status,
       started,
-      result: { epoch, loss, accuracy },
+      result,
     });
   }
 );
