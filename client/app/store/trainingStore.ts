@@ -8,7 +8,7 @@ interface SymbolTrainingProgress {
   result?: {
     epoch: number; // The current epoch number
     loss: number; // The loss value for the current epoch
-    accuracy: number; // Optional accuracy metric for the current epoch
+    valLoss: number; // Optional valLoss metric for the current epoch
   };
   status: "pending" | "success" | "error" | "loading";
 }
@@ -39,7 +39,7 @@ const socket = useSocketStore.getState().socket;
 socket.on(
   "training_progress",
   ({ symbol, message, status, started, result }) => {
-    console.log("hi there");
+    console.log(symbol, message, status, result);
     // Update the training progress in the Zustand store
     useTrainingStore.getState().updateTrainingProgress(symbol, {
       message,

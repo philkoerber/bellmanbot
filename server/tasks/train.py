@@ -8,7 +8,6 @@ from datetime import datetime
 from celery_config import make_celery
 from server import socketio
 
-
 celery = make_celery()
 
 # Configuration Constants
@@ -35,11 +34,32 @@ def create_sequences(X, y, time_steps=5):
         ys.append(y[i + time_steps])
     return np.array(Xs), np.array(ys)
 
+# Custom Callback to Emit SocketIO Events
+class SocketIOCallback(tf.keras.callbacks.Callback):
+    def __init__(self, socketio, symbol):
+        super(SocketIOCallback, self).__init__()
+        self.socketio = socketio
+        self.symbol = symbol
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Emit training progress for each epoch
+        self.socketio.emit("training_progress", {
+            'status': "pending", 
+            'message': "currently training...", 
+            'result': {
+                'epoch': epoch,
+                'loss': logs.get('loss'),
+                'valLoss': logs.get('val_loss')
+                },
+            "symbol": self.symbol
+            })
+
 # Task to train the model
-@celery.task(name="train_model",bind=True)
+@celery.task(name="train_model", bind=True)
 def train_model(self, symbol):
     try:
         print(f"Starting training for symbol: {symbol}")
+
         socketio.emit("training_progress", {'status': "pending", 'message': "starting training...", "symbol": symbol})
 
         safe_symbol = symbol.replace('/', '_')
@@ -71,14 +91,18 @@ def train_model(self, symbol):
 
         model = create_model()
 
-        # Train the model
+        # Create and pass the SocketIO callback
+        socketio_callback = SocketIOCallback(socketio, symbol)
+
+        # Train the model with the callback
         history = model.fit(
             X_train,
             y_train,
             epochs=100,
             batch_size=64,
             validation_data=(X_val, y_val),
-            verbose=2
+            verbose=2,
+            callbacks=[socketio_callback]  # Add the callback here
         )
 
         # Save the model and scalers
@@ -97,7 +121,6 @@ def train_model(self, symbol):
             "final_validation_loss": history.history.get('val_loss', [None])[-1],
             "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
-        
 
         results_path = os.path.join(MODELS_FOLDER, 'results', f'{safe_symbol}_log.json')
         os.makedirs(os.path.join(MODELS_FOLDER, 'results'), exist_ok=True)
@@ -106,9 +129,8 @@ def train_model(self, symbol):
 
         print(f"Training completed for symbol: {symbol}")
         socketio.emit("training_progress", {'status': "success", 'message': "Training finished", "symbol": symbol})
-        return {"message": f"Training completed and model for symbol '{symbol}' saved!", "results": results}
 
     except Exception as e:
         print(f"Error occurred: {e}")
+        socketio.emit("training_progress", {'status': "error", 'message': str(e), "symbol": symbol})
         raise self.retry(exc=e)
-

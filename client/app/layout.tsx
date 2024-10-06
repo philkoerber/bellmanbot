@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import OurConsole from "./components/customConsole";
 import Image from "next/image";
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -17,7 +16,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-
     <html lang="en">
       <body className={inter.className}>
         <div className="h-[100vh] flex">
@@ -27,24 +25,24 @@ export default function RootLayout({
           </div>
 
           {/* Right: Main Application*/}
-          <div className="w-2/3 h-full bg-gradient-to-tr from-antiwhite via-seasalt overflow-x-hidden relative">  
+          <div className="w-2/3 h-full bg-gradient-to-tr from-antiwhite via-seasalt overflow-x-hidden relative">
             <div className="relative z-10 p-2">{children}</div>
           </div>
           {/* Background Image*/}
           <div className="fixed flex justify-center items-center">
-              <Image
-                 width={400}
-                 height={400}
-                 src="/bell.svg"
-                 alt="Background SVG"
-                 className="fixed max-w-[400px] w-[50%] h-auto object-contain opacity-[15%] blur-sm z-0"
-                 style={{
-                   top: "50%",
-                   left: "66%",
-                   transform: "translate(-50%, -50%)",
-                 }}
-               />
-              </div>
+            <Image
+              width={400}
+              height={400}
+              src="/bell.svg"
+              alt="Background SVG"
+              className="fixed max-w-[400px] w-[50%] h-auto object-contain opacity-[15%] blur-sm z-0"
+              style={{
+                top: "50%",
+                left: "66%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          </div>
         </div>
       </body>
     </html>

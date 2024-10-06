@@ -1,12 +1,10 @@
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { forexPairs } from "./components/instruments/instruments";
 import Instrument from "./components/instruments/Instrument";
 
 const Page = () => {
-
   return (
-    <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
       {forexPairs.map((symbol, index) => (
         <div
           key={symbol}

@@ -5,6 +5,7 @@ import Button from "../Button";
 import useDownloadStore from "@/app/store/downloadStore";
 import useTrainingStore from "@/app/store/trainingStore";
 import useLogStore from "@/app/store/logStore";
+import TrainingBackground from "./TrainingBackground";
 
 const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
   // STORE STUFF
@@ -80,14 +81,20 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
       });
     }
   };
-
   return (
-    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px] relative">
-      <h1 className="text-5xl text-sage font-bold absolute right-1 bottom-0">
+    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px] overflow-hidden relative">
+      {/* Move TrainingBubble behind everything */}
+      {symbolTrainingProgress.status === "pending" && (
+        <div className="absolute w-full h-full flex justify-center items-center z-[-1]">
+          <TrainingBackground />
+        </div>
+      )}
+
+      <h1 className="text-5xl text-sage tracking-tighter font-extrabold absolute right-0 -bottom-2 z-10">
         {symbol}
       </h1>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 z-10">
         {/* DOWNLOAD */}
         <div className="basis-1/4">
           <Button
@@ -115,16 +122,13 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
           <div className="text-sm text-pakistan mt-1">
             <p>{symbolTrainingProgress.message}</p>
             <p className="text-xs font-extralight">
-              {symbolTrainingProgress.status}
-            </p>
-            <p className="text-xs font-extralight">
               Epoch: {symbolTrainingProgress.result?.epoch}
             </p>
             <p className="text-xs font-extralight">
               Loss: {symbolTrainingProgress.result?.loss}
             </p>
             <p className="text-xs font-extralight">
-              Accuracy: {symbolTrainingProgress.result?.accuracy}
+              Accuracy: {symbolTrainingProgress.result?.valLoss}
             </p>
             <p className="text-xs font-extralight">
               {symbolTrainingProgress.status}
