@@ -4,7 +4,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from celery_config import make_celery
-from blueprints import train_bp, predict_bp, download_bp
+from blueprints import train_bp, predict_bp, download_bp, instrument_info_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +18,7 @@ celery = make_celery(app)
 app.register_blueprint(train_bp, url_prefix='/api')
 app.register_blueprint(predict_bp, url_prefix='/api')
 app.register_blueprint(download_bp, url_prefix='/api')
+app.register_blueprint(instrument_info_bp, url_prefix='/api')
 
 @app.route('/')
 def home():

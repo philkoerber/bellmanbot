@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { InstrumentProps } from "@/app/globals";
 import Button from "../Button";
 import useDownloadStore from "@/app/store/downloadStore";
@@ -29,6 +29,28 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
   );
 
   //GET THIS INSTRUMENTS SYMBOL DATA
+
+  const getInstrumentInfo = async (symbol: string) => {
+    try {
+      const response = await fetch(`/api/instrument_info?symbol=${symbol}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Error in getting data for instrument"
+        );
+      }
+
+      // This will log the body content directly
+      const instrumentData = await response.json();
+      return instrumentData;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  getInstrumentInfo(symbol);
 
   const symbolDownloadProgress = downloadProgress[symbol] || {
     message: "TODO mabe fetch metadata",
@@ -81,6 +103,7 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
       });
     }
   };
+
   return (
     <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px] overflow-hidden relative">
       {/* Move TrainingBubble behind everything */}
