@@ -1,0 +1,57 @@
+[
+  {
+    "symbol": "ETH/EUR",
+    "metatraderName": "ETHEUR",
+    "twelveDataName": "ETH/EUR"
+  },
+  {
+    "symbol": "EUR/USD",
+    "metatraderName": "EURUSD",
+    "twelveDataName": "EUR/USD"
+  },
+  {
+    "symbol": "USD/JPY",
+    "metatraderName": "USDJPY",
+    "twelveDataName": "USD/JPY"
+  },
+  {
+    "symbol": "GBP/USD",
+    "metatraderName": "GBPUSD",
+    "twelveDataName": "GBP/USD"
+  },
+  {
+    "symbol": "EUR/GBP",
+    "metatraderName": "EURGBP",
+    "twelveDataName": "EUR/GBP"
+  },
+  {
+    "symbol": "AUD/USD",
+    "metatraderName": "AUDUSD",
+    "twelveDataName": "AUD/USD"
+  },
+  {
+    "symbol": "USD/CAD",
+    "metatraderName": "USDCAD",
+    "twelveDataName": "USD/CAD"
+  },
+  {
+    "symbol": "NZD/JPY",
+    "metatraderName": "NZDJPY",
+    "twelveDataName": "NZD/JPY"
+  },
+  {
+    "symbol": "EUR/JPY",
+    "metatraderName": "EURJPY",
+    "twelveDataName": "EUR/JPY"
+  },
+  {
+    "symbol": "AUD/NZD",
+    "metatraderName": "AUDNZD",
+    "twelveDataName": "AUD/NZD"
+  },
+  {
+    "symbol": "GBP/JPY",
+    "metatraderName": "GBPJPY",
+    "twelveDataName": "GBP/JPY"
+  }
+]

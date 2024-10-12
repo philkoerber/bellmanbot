@@ -48,3 +48,16 @@ def instrument_info():
         "data_points": data_points_count,
         "training_results": training_results
     }), 200
+
+@instrument_info_bp.route('/instruments', methods=['GET'])
+def get_instruments():
+    # Construct the path to the JSON file
+    file_path = os.path.join(os.path.dirname(__file__), 'symbols.json')
+    try:
+        with open(file_path, 'r') as f:
+            symbols = json.load(f)
+        return jsonify(symbols)
+    except FileNotFoundError:
+        return jsonify({"error": "Symbols JSON file not found"}), 404
+    except json.JSONDecodeError:
+        return jsonify({"error": "Error decoding JSON"}), 500

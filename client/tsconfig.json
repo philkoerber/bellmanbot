@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "globals.d.ts"
+    "globals.d.ts",
+    "../instruments.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -12,9 +12,9 @@ CORS(app)
 # Initialize SocketIO
 socketio = SocketIO(app, message_queue='redis://redis:6379/0', cors_allowed_origins="*")
 
-
 celery = make_celery(app)
 
+# Register the blueprints
 app.register_blueprint(train_bp, url_prefix='/api')
 app.register_blueprint(predict_bp, url_prefix='/api')
 app.register_blueprint(download_bp, url_prefix='/api')
@@ -29,5 +29,4 @@ def handshake_for_verifying_connection():
     socketio.emit('hello_handshake', {'message': "Socket handshake from server"})
 
 if __name__ == '__main__':
-    
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)
