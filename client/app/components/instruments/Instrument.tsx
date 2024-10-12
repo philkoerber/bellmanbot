@@ -32,9 +32,12 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
 
   const getInstrumentInfo = async (symbol: string) => {
     try {
-      const response = await fetch(`/api/instrument_info?symbol=${symbol}`, {
-        method: "POST",
-      });
+      const response = await fetch(
+        `/api/instrument_info?symbol=${encodeURIComponent(symbol)}`,
+        {
+          method: "POST",
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -50,15 +53,47 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
       console.error("Error:", error);
     }
   };
-  getInstrumentInfo(symbol);
+
+  useEffect(() => {
+    const fetchInstrumentData = async () => {
+      const data = await getInstrumentInfo(symbol);
+      if (data) {
+        // Update download progress message and status
+        const dataPoints = data.data_points ?? "No data";
+        updateDownloadProgress(symbol, {
+          message: `Points: ${dataPoints}`,
+          status: dataPoints !== "No data" ? "success" : "error",
+        });
+
+        // Extract training results if available
+        const trainingResults = data.training_results || {};
+        const hasTrainingResults = !!Object.keys(trainingResults).length;
+
+        updateTrainingProgress(symbol, {
+          message: hasTrainingResults
+            ? `Model for ${symbol}`
+            : "No model found",
+          started: trainingResults.timestamp || "N/A",
+          status: hasTrainingResults ? "success" : "error",
+          result: {
+            epoch: hasTrainingResults ? trainingResults.epoch ?? 100 : 0,
+            loss: trainingResults.final_training_loss ?? "N/A",
+            valLoss: trainingResults.final_validation_loss ?? "N/A",
+          },
+        });
+      }
+    };
+
+    fetchInstrumentData();
+  }, [symbol]);
 
   const symbolDownloadProgress = downloadProgress[symbol] || {
-    message: "TODO mabe fetch metadata",
+    message: "Loading download progress...",
     status: "",
   };
 
   const symbolTrainingProgress = trainingProgress[symbol] || {
-    message: "TODO mabe fetch metadata",
+    message: "Loading training process",
     status: "",
   };
 
@@ -113,7 +148,7 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
         </div>
       )}
 
-      <h1 className="text-5xl text-sage tracking-tighter font-extrabold absolute right-0 -bottom-2 z-10">
+      <h1 className="text-5xl text-sage select-none tracking-tighter font-extrabold absolute right-0 -bottom-2 z-10">
         {symbol}
       </h1>
 
@@ -142,8 +177,11 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
           >
             Train
           </Button>
-          <div className="text-sm text-pakistan mt-1">
+          <div className="z-50 text-sm text-pakistan mt-1 flex flex-col gap-1">
             <p>{symbolTrainingProgress.message}</p>
+            <p className="text-xs font-extralight">
+              Started: {symbolTrainingProgress.started}
+            </p>
             <p className="text-xs font-extralight">
               Epoch: {symbolTrainingProgress.result?.epoch}
             </p>
