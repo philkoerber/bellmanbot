@@ -20,7 +20,7 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 # Function to create the model
 def create_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.SimpleRNN(100, activation='relu', input_shape=(5, 4)),  # Adjust input shape based on sequences
+        tf.keras.layers.SimpleRNN(100, activation='relu', input_shape=(5, 5)),  # Adjusted input shape
         tf.keras.layers.Dense(1)
     ])
     model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
@@ -44,15 +44,15 @@ class SocketIOCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         # Emit training progress for each epoch
         self.socketio.emit("training_progress", {
-            'status': "pending", 
-            'message': "currently training...", 
+            'status': "pending",
+            'message': "currently training...",
             'result': {
                 'epoch': epoch,
                 'loss': logs.get('loss'),
                 'valLoss': logs.get('val_loss')
-                },
+            },
             "symbol": self.symbol
-            })
+        })
 
 # Task to train the model
 @celery.task(name="train_model", bind=True)
@@ -70,14 +70,14 @@ def train_model(self, symbol):
 
         # Load data
         df = pd.read_csv(data_file)
-        X = df[['open', 'high', 'low', 'volume']].values
+        X = df[['open', 'high', 'low', 'close', 'volume']].values
         y = df['close'].shift(-1).fillna(df['close']).values
 
         # Normalize data using MinMaxScaler
         scaler_X = MinMaxScaler()
         scaler_y = MinMaxScaler()
 
-        X_scaled = scaler_X.fit_transform(X)
+        X_scaled = scaler_X.fit_transform(X)  # Fit and transform X
         y_scaled = scaler_y.fit_transform(y.reshape(-1, 1))
 
         # Create sequences (e.g., 5 time steps)

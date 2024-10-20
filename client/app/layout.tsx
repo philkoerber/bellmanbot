@@ -20,13 +20,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="h-[100vh] flex">
           {/* Left: Custom Console with Radial Gradient */}
-          <div className="w-1/3 h-full bg-antiwhite text-pakistan overflow-y-auto border-r-[2px] bg-gradient-to-tr from-antiwhite via-seasalt border-sage">
+          <div className="w-1/3 h-full bg-antiwhite text-pakistan overflow-y-auto border-r-[2px] bg-gradient-to-tr from-antiwhite via-seasalt border-pakistan">
             <OurConsole />
           </div>
 
           {/* Right: Main Application*/}
           <div className="w-2/3 h-full bg-gradient-to-tr from-antiwhite via-seasalt overflow-x-hidden relative">
-            <div className="relative z-10 p-2">{children}</div>
+            <div className="relative z-10">{children}</div>
           </div>
           {/* Background Image*/}
           <div className="fixed flex justify-center items-center">

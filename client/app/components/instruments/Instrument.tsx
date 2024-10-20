@@ -140,17 +140,13 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
   };
 
   return (
-    <div className="p-1 bg-seasalt bg-opacity-70 border-sage border-2 rounded-sm gap-2 h-[200px] overflow-hidden relative">
+    <div className="p-2 bg-seasalt bg-opacity-70 border-pakistan border-b-2 sm:border-r-0 lg:border-r-2 gap-2 h-[200px] overflow-hidden relative">
       {/* Move TrainingBubble behind everything */}
       {symbolTrainingProgress.status === "pending" && (
         <div className="absolute w-full h-full flex justify-center items-center z-[-1]">
           <TrainingBackground />
         </div>
       )}
-
-      <h1 className="text-5xl text-sage select-none tracking-tighter font-extrabold absolute right-0 -bottom-2 z-10">
-        {symbol}
-      </h1>
 
       <div className="flex gap-2 z-10">
         {/* DOWNLOAD */}
@@ -201,6 +197,10 @@ const Instrument: React.FC<InstrumentProps> = ({ symbol }) => {
         <div className="basis-1/4">
           <Button disabled={true}>Test</Button>
         </div>
+
+        <h1 className="text-6xl text-sage select-none tracking-tighter font-extrabold absolute right-0 -bottom-2 -z-0">
+          {symbol}
+        </h1>
       </div>
     </div>
   );
