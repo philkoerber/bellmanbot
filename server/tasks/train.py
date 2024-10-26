@@ -7,20 +7,23 @@ from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 from celery_config import make_celery
 from server import socketio
+from tools.autoencoder import train_autoencoder
 
+# Initialize Celery
 celery = make_celery()
 
 # Configuration Constants
 MODELS_FOLDER = 'models'
 DATA_FOLDER = 'data'
 
+# Create folders if they don't exist
 os.makedirs(MODELS_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
 
-# Function to create the model
-def create_model():
+# Function to create the RNN model
+def create_model(input_shape=(5, 16)):  # Adjusted for autoencoder output
     model = tf.keras.Sequential([
-        tf.keras.layers.SimpleRNN(100, activation='relu', input_shape=(5, 5)),  # Adjusted input shape
+        tf.keras.layers.SimpleRNN(100, activation='relu', input_shape=input_shape),
         tf.keras.layers.Dense(1)
     ])
     model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
@@ -80,16 +83,23 @@ def train_model(self, symbol):
         X_scaled = scaler_X.fit_transform(X)  # Fit and transform X
         y_scaled = scaler_y.fit_transform(y.reshape(-1, 1))
 
-        # Create sequences (e.g., 5 time steps)
+        # Train Autoencoder using tools and transform the data
+        encoder_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_encoder.keras')
+        encoder = train_autoencoder(X_scaled, X_scaled.shape[1], encoder_path)
+
+        # Use the trained encoder to transform X_scaled data
+        X_transformed = encoder.predict(X_scaled)
+
+        # Create sequences (e.g., 5 time steps) using transformed data
         time_steps = 5
-        X_seq, y_seq = create_sequences(X_scaled, y_scaled, time_steps)
+        X_seq, y_seq = create_sequences(X_transformed, y_scaled, time_steps)
 
         # Split data into training and validation sets
         train_size = int(len(X_seq) * 0.8)
         X_train, X_val = X_seq[:train_size], X_seq[train_size:]
         y_train, y_val = y_seq[:train_size], y_seq[train_size:]
 
-        model = create_model()
+        model = create_model(input_shape=(time_steps, X_transformed.shape[1]))
 
         # Create and pass the SocketIO callback
         socketio_callback = SocketIOCallback(socketio, symbol)
@@ -102,7 +112,7 @@ def train_model(self, symbol):
             batch_size=64,
             validation_data=(X_val, y_val),
             verbose=2,
-            callbacks=[socketio_callback]  # Add the callback here
+            callbacks=[socketio_callback]
         )
 
         # Save the model and scalers

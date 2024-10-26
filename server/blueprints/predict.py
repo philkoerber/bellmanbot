@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
+from tools.autoencoder import load_encoder  # Import load_encoder from tools
 
 # Create a Blueprint for predict
 predict_bp = Blueprint('predict', __name__)
@@ -60,18 +61,22 @@ def predict():
         # Ensure data is sorted by datetime in ascending order
         df.sort_values('datetime', inplace=True)
 
-        # Load the model and scalers
+        # Load the model, encoder, and scalers
         model_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}.keras')
+        encoder_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_encoder.keras')
         scaler_X_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_scaler_X.pkl')
         scaler_y_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_scaler_y.pkl')
 
         if not os.path.exists(model_path):
             return jsonify({"message": f"Model for symbol '{symbol}' not found"}), 500
+        if not os.path.exists(encoder_path):
+            return jsonify({"message": f"Encoder for symbol '{symbol}' not found"}), 500
         if not os.path.exists(scaler_X_path) or not os.path.exists(scaler_y_path):
             return jsonify({"message": f"Scalers for symbol '{symbol}' not found"}), 500
 
-        # Load the model and scalers
+        # Load the model, encoder, and scalers
         model = tf.keras.models.load_model(model_path)
+        encoder = load_encoder(encoder_path)
         scaler_X = pd.read_pickle(scaler_X_path)
         scaler_y = pd.read_pickle(scaler_y_path)
 
@@ -82,15 +87,18 @@ def predict():
         # Scale the input features
         X_scaled = scaler_X.transform(X)
 
+        # Use the encoder to transform the input data
+        X_transformed = encoder.predict(X_scaled)
+
         # Define the number of time steps (should match the model's input shape)
         time_steps = 5
 
         # Ensure we have enough data to create at least one sequence
-        if len(X_scaled) < time_steps:
+        if len(X_transformed) < time_steps:
             return jsonify({"message": "Not enough data to create input sequences"}), 400
 
         # Prepare the input sequence
-        input_seq = X_scaled[-time_steps:].reshape(1, time_steps, X_scaled.shape[1])
+        input_seq = X_transformed[-time_steps:].reshape(1, time_steps, X_transformed.shape[1])
 
         # Predict the next 10 minutes iteratively
         predictions = []
