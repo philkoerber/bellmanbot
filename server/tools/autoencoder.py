@@ -1,6 +1,9 @@
 import os
 import tensorflow as tf
 
+# Constants for folder paths
+MODELS_FOLDER = 'models'
+
 # Function to create and train an autoencoder
 def build_autoencoder(input_dim):
     input_layer = tf.keras.layers.Input(shape=(input_dim,))
@@ -20,20 +23,55 @@ def build_autoencoder(input_dim):
     return autoencoder, encoder
 
 # Function to train and save the autoencoder
-def train_autoencoder(X_scaled, input_dim, save_path):
-    autoencoder, encoder = build_autoencoder(input_dim)
+def train_autoencoder(X_scaled, input_dim, symbol, callback):
+    safe_symbol = symbol.replace('/', '_')
+    # Define save path based on symbol
+    encoder_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_encoder.keras')
     
-    # Train the autoencoder
-    autoencoder.fit(X_scaled, X_scaled, epochs=50, batch_size=64, validation_split=0.2, verbose=2)
+    # Build the autoencoder
+    autoencoder, encoder = build_autoencoder(input_dim)
+
+    # Train the autoencoder with the provided callback
+    autoencoder.fit(
+        X_scaled, X_scaled, 
+        epochs=100, 
+        batch_size=64, 
+        validation_split=0.2, 
+        verbose=2,
+        callbacks=[callback] #need to pass down from parent because of socketio instance is in parent
+    )
     
     # Save the trained encoder
-    encoder.save(save_path)
+    encoder.save(encoder_path)
     
     return encoder
 
 # Function to load a pre-trained encoder
-def load_encoder(encoder_path):
+def load_encoder(safe_symbol):
+    # Define path based on symbol
+    encoder_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_encoder.keras')
+    
     if os.path.exists(encoder_path):
         return tf.keras.models.load_model(encoder_path)
     else:
-        raise FileNotFoundError(f"Encoder file not found at {encoder_path}")
+        raise FileNotFoundError(f"Encoder file not found for symbol '{safe_symbol}' at {encoder_path}")
+
+# Custom Callback for Autoencoder Training Progress
+class SocketIOAutoencoderCallback(tf.keras.callbacks.Callback):
+    def __init__(self, socketio, symbol):
+        super(SocketIOAutoencoderCallback, self).__init__()
+        self.socketio = socketio
+        self.symbol = symbol
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Emit training progress for each epoch
+        self.socketio.emit("training_progress", {
+            'status': "pending",
+            'message': f"Training autoencoder...",
+            'result': {
+                'epoch': epoch + 1,
+                'loss': logs.get('loss'),
+                'valLoss': logs.get('val_loss')
+            },
+            "symbol": self.symbol
+        })

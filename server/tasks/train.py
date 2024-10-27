@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 from celery_config import make_celery
 from server import socketio
-from tools.autoencoder import train_autoencoder
+from tools.autoencoder import train_autoencoder, SocketIOAutoencoderCallback
 
 # Initialize Celery
 celery = make_celery()
@@ -48,9 +48,9 @@ class SocketIOCallback(tf.keras.callbacks.Callback):
         # Emit training progress for each epoch
         self.socketio.emit("training_progress", {
             'status': "pending",
-            'message': "currently training...",
+            'message': "Currently training...",
             'result': {
-                'epoch': epoch,
+                'epoch': epoch + 1,
                 'loss': logs.get('loss'),
                 'valLoss': logs.get('val_loss')
             },
@@ -83,12 +83,28 @@ def train_model(self, symbol):
         X_scaled = scaler_X.fit_transform(X)  # Fit and transform X
         y_scaled = scaler_y.fit_transform(y.reshape(-1, 1))
 
+        # Emit a starting message before training the autoencoder
+        socketio.emit("training_progress", {
+            'status': "pending",
+            'message': "Starting autoencoder training...",
+            "symbol": symbol
+        })
+
+        # Create the SocketIO callback for the autoencoder
+        autoencoder_callback = SocketIOAutoencoderCallback(socketio, symbol)
+        
         # Train Autoencoder using tools and transform the data
-        encoder_path = os.path.join(MODELS_FOLDER, f'{safe_symbol}_encoder.keras')
-        encoder = train_autoencoder(X_scaled, X_scaled.shape[1], encoder_path)
+        encoder = train_autoencoder(X_scaled, X_scaled.shape[1], safe_symbol, autoencoder_callback)
 
         # Use the trained encoder to transform X_scaled data
         X_transformed = encoder.predict(X_scaled)
+
+        # Emit a completion message after the autoencoder training
+        socketio.emit("training_progress", {
+            'status': "pending",
+            'message': "Autoencoder training completed.",
+            "symbol": symbol
+        })
 
         # Create sequences (e.g., 5 time steps) using transformed data
         time_steps = 5
@@ -101,14 +117,14 @@ def train_model(self, symbol):
 
         model = create_model(input_shape=(time_steps, X_transformed.shape[1]))
 
-        # Create and pass the SocketIO callback
+        # Create and pass the SocketIO callback for RNN model training
         socketio_callback = SocketIOCallback(socketio, symbol)
 
         # Train the model with the callback
         history = model.fit(
             X_train,
             y_train,
-            epochs=100,
+            epochs=200,
             batch_size=64,
             validation_data=(X_val, y_val),
             verbose=2,

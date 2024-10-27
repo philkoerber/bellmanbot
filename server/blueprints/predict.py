@@ -76,7 +76,7 @@ def predict():
 
         # Load the model, encoder, and scalers
         model = tf.keras.models.load_model(model_path)
-        encoder = load_encoder(encoder_path)
+        encoder = load_encoder(safe_symbol)
         scaler_X = pd.read_pickle(scaler_X_path)
         scaler_y = pd.read_pickle(scaler_y_path)
 
@@ -125,9 +125,6 @@ def predict():
             # Update 'close' (assuming it's at index 3 in the features)
             y_pred_scaled = scaler_y.transform([[y_pred]])[0][0]
             new_row[3] = y_pred_scaled  # Update 'close' in the scaled input
-
-            # Optionally update other features if needed (e.g., 'open', 'high', 'low', 'volume')
-            # For simplicity, we'll keep them the same
 
             # Append the new row to the input sequence
             input_seq = np.append(input_seq[:, 1:, :], [[new_row]], axis=1)
