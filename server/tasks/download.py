@@ -14,7 +14,7 @@ celery = make_celery()
 TWELVEDATA_API_KEY = os.getenv('TWELVEDATA_API_KEY') or '83a3ab2d88ff4292a6b446d30b5d27bc'
 OUTPUTSIZE = 4000  # Maximum allowed by the API for one request
 DATA_FOLDER = 'data'
-TOTAL_RECORDS = OUTPUTSIZE * 50  # Number of records you want to retrieve for testing
+TOTAL_RECORDS = OUTPUTSIZE * 20  # Number of records you want to retrieve for testing
 
 # Ensure the data and models directories exist.
 os.makedirs(DATA_FOLDER, exist_ok=True)

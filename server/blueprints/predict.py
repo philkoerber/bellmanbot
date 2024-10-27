@@ -4,8 +4,6 @@ import os
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-from sklearn.preprocessing import MinMaxScaler
-from datetime import datetime
 from tools.autoencoder import load_encoder  # Import load_encoder from tools
 
 # Create a Blueprint for predict
@@ -51,7 +49,7 @@ def predict():
 
         # Access the chart data from the JSON
         chart_data = data.get('data', [])
-        if not chart_data or len(chart_data) < 5:
+        if not chart_data or len(chart_data) < 10:
             return jsonify({"message": "Insufficient chart data provided"}), 400
 
         # Convert chart data to DataFrame
@@ -91,7 +89,7 @@ def predict():
         X_transformed = encoder.predict(X_scaled)
 
         # Define the number of time steps (should match the model's input shape)
-        time_steps = 5
+        time_steps = 10  # Updated to match the training configuration
 
         # Ensure we have enough data to create at least one sequence
         if len(X_transformed) < time_steps:
@@ -100,34 +98,21 @@ def predict():
         # Prepare the input sequence
         input_seq = X_transformed[-time_steps:].reshape(1, time_steps, X_transformed.shape[1])
 
-        # Predict the next 10 minutes iteratively
+        # Predict the next 10 future steps in one go
+        y_pred_scaled = model.predict(input_seq)
+
+        # Inverse transform the predicted values to the original scale
+        y_pred = scaler_y.inverse_transform(y_pred_scaled)[0]
+
+        # Prepare the prediction time series based on the last timestamp
         predictions = []
         last_datetime = df['datetime'].iloc[-1]
-        for i in range(10):
-            # Predict the next value
-            y_pred_scaled = model.predict(input_seq)
-
-            # Inverse transform the predicted value
-            y_pred = scaler_y.inverse_transform(y_pred_scaled)[0][0]
-
-            # Append the prediction
+        for i, pred in enumerate(y_pred):
             prediction_time = last_datetime + pd.Timedelta(minutes=i + 1)
             predictions.append({
-                'predicted_close': float(y_pred),  # Convert to standard float
+                'predicted_close': float(pred),  # Convert to standard float
                 'datetime': prediction_time
             })
-
-            # Prepare the next input sequence
-            # Create a new input by appending the predicted value
-            # We'll update the 'close' value in the last row with the predicted value
-
-            new_row = input_seq[0, -1, :].copy()
-            # Update 'close' (assuming it's at index 3 in the features)
-            y_pred_scaled = scaler_y.transform([[y_pred]])[0][0]
-            new_row[3] = y_pred_scaled  # Update 'close' in the scaled input
-
-            # Append the new row to the input sequence
-            input_seq = np.append(input_seq[:, 1:, :], [[new_row]], axis=1)
 
         # Format the predictions for response
         predictions_formatted = []

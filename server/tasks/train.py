@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 import json
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from datetime import datetime
 from celery_config import make_celery
 from server import socketio
@@ -13,28 +13,36 @@ from tools.autoencoder import train_autoencoder, SocketIOAutoencoderCallback
 celery = make_celery()
 
 # Configuration Constants
+# Navigation
 MODELS_FOLDER = 'models'
 DATA_FOLDER = 'data'
+# Model
+MAX_EPOCHS = 50
+FUTURE_STEPS = 10
+TIME_STEPS = 10
+BATCH_SIZE = 64
+
 
 # Create folders if they don't exist
 os.makedirs(MODELS_FOLDER, exist_ok=True)
 os.makedirs(DATA_FOLDER, exist_ok=True)
 
 # Function to create the RNN model
-def create_model(input_shape=(5, 16)):  # Adjusted for autoencoder output
+def create_model(input_shape=(10, 16), future_steps=10):  # Adjusted for autoencoder output
     model = tf.keras.Sequential([
-        tf.keras.layers.SimpleRNN(100, activation='relu', input_shape=input_shape),
-        tf.keras.layers.Dense(1)
+        tf.keras.layers.LSTM(100, activation='tanh', input_shape=input_shape, return_sequences=True),
+        tf.keras.layers.LSTM(50, activation='tanh'),
+        tf.keras.layers.Dense(future_steps)
     ])
-    model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mse', metrics=['mae'])
     return model
 
 # Function to create sequences from data
-def create_sequences(X, y, time_steps=5):
+def create_sequences(X, y, time_steps=TIME_STEPS, future_steps=FUTURE_STEPS):
     Xs, ys = [], []
-    for i in range(len(X) - time_steps):
+    for i in range(len(X) - time_steps - future_steps + 1):
         Xs.append(X[i:i + time_steps])
-        ys.append(y[i + time_steps])
+        ys.append(y[i + time_steps:i + time_steps + future_steps])
     return np.array(Xs), np.array(ys)
 
 # Custom Callback to Emit SocketIO Events
@@ -76,9 +84,9 @@ def train_model(self, symbol):
         X = df[['open', 'high', 'low', 'close', 'volume']].values
         y = df['close'].shift(-1).fillna(df['close']).values
 
-        # Normalize data using MinMaxScaler
-        scaler_X = MinMaxScaler()
-        scaler_y = MinMaxScaler()
+        # Normalize data using StandardScaler
+        scaler_X = StandardScaler()
+        scaler_y = StandardScaler()
 
         X_scaled = scaler_X.fit_transform(X)  # Fit and transform X
         y_scaled = scaler_y.fit_transform(y.reshape(-1, 1))
@@ -106,16 +114,15 @@ def train_model(self, symbol):
             "symbol": symbol
         })
 
-        # Create sequences (e.g., 5 time steps) using transformed data
-        time_steps = 5
-        X_seq, y_seq = create_sequences(X_transformed, y_scaled, time_steps)
+        # Create sequences using transformed data
+        X_seq, y_seq = create_sequences(X_transformed, y_scaled, TIME_STEPS, FUTURE_STEPS)
 
         # Split data into training and validation sets
         train_size = int(len(X_seq) * 0.8)
         X_train, X_val = X_seq[:train_size], X_seq[train_size:]
         y_train, y_val = y_seq[:train_size], y_seq[train_size:]
 
-        model = create_model(input_shape=(time_steps, X_transformed.shape[1]))
+        model = create_model(input_shape=(TIME_STEPS, X_transformed.shape[1]), future_steps=FUTURE_STEPS)
 
         # Create and pass the SocketIO callback for RNN model training
         socketio_callback = SocketIOCallback(socketio, symbol)
@@ -124,8 +131,8 @@ def train_model(self, symbol):
         history = model.fit(
             X_train,
             y_train,
-            epochs=200,
-            batch_size=64,
+            epochs=MAX_EPOCHS,
+            batch_size=BATCH_SIZE,
             validation_data=(X_val, y_val),
             verbose=2,
             callbacks=[socketio_callback]

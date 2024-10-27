@@ -3,6 +3,11 @@ import tensorflow as tf
 
 # Constants for folder paths
 MODELS_FOLDER = 'models'
+# Model Config Constants
+MAX_EPOCHS = 50
+FUTURE_STEPS = 10
+TIME_STEPS = 10
+BATCH_SIZE = 64
 
 # Function to create and train an autoencoder
 def build_autoencoder(input_dim):
@@ -34,7 +39,7 @@ def train_autoencoder(X_scaled, input_dim, symbol, callback):
     # Train the autoencoder with the provided callback
     autoencoder.fit(
         X_scaled, X_scaled, 
-        epochs=100, 
+        epochs=MAX_EPOCHS, 
         batch_size=64, 
         validation_split=0.2, 
         verbose=2,
