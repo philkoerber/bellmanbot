@@ -8,7 +8,10 @@ if sys.platform == "win32":
     os.system("")
 
 # Path to your client directory
-CLIENT_DIR = "./client"
+HOME_DIR = os.path.expanduser("~")
+CLIENT_DIR = os.path.join(HOME_DIR, "client")
+print(CLIENT_DIR)
+
 
 # Color variables
 RED='\033[0;31m'
@@ -34,13 +37,16 @@ print(f"""{BLUE}
 if not os.path.exists(CLIENT_DIR):
     print(f"{RED}npm is not initialized in {CLIENT_DIR}. Running npm install...{NC}")
     current_dir = os.getcwd()
+    os.mkdir(CLIENT_DIR)
     os.chdir(CLIENT_DIR) 
-    os.system('npm install')
+    os.system('npm install') 
+    #TODO mach das das geht 
     os.chdir(current_dir)
     
 else: 
     print(f"{GREEN}npm is already initialized in {CLIENT_DIR}{NC}")
 
 # Run Docker Compose
+print(os.getcwd)
 os.system('docker compose up --build')
 print(f"{BLUE} Start Docker Compose...")
